@@ -223,7 +223,7 @@ def normalize_mix_px4(B):
 
     return B_px
 
-def generate_mixer_multirotor_header(geometries_list, use_normalized_mix=False, use_6dof=False):
+def generate_mixer_multirotor_header(geometries_list, use_normalized_mix=False, use_6dof=False, motor_disable_mode=False, motor_disabled=4):
     '''
     Generate C header file with same format as multi_tables.py
     TODO: rewrite using templates (see generation of uORB headers)
@@ -259,19 +259,37 @@ def generate_mixer_multirotor_header(geometries_list, use_normalized_mix=False, 
             mix = geometry['mix']['B']
 
         buf.write(u"static constexpr MultirotorMixer::Rotor _config_{}[] {{\n".format(geometry['info']['name']))
-
+        motor_number = 0
         for row in mix:
             if use_6dof:
             # 6dof mixer
                 buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
                     row[0], row[1], row[2],
                     row[3], row[4], row[5]))
+
+                if motor_disable_mode and geometry['info']['name'] == 'quad_x':
+                    if motor_disabled == 2:
+                        if motor_number == 0:
+                            buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
+                                -0.707, 0.707, 1.0, 1.0))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
+                        if motor_number == 1:
+                            buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
+                                0.707, -0.707, 1.0, 1.0))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
+                        if motor_number == 2:
+                            buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
+                                0.0, 0.0, -0.0, 0.0))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
+                        if motor_number == 3:
+                            buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
+                                0.0, 0.0, -0.0, 0.0))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
+                        motor_number = motor_number + 1
+                else:
+                    buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
+                        row[0], row[1], row[2], -row[5]))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
             else:
             # 4dof mixer
                 buf.write(u"\t{{ {:9f}, {:9f}, {:9f}, {:9f} }},\n".format(
                     row[0], row[1], row[2],
                     -row[5]))  # Upward thrust is positive TODO: to remove this, adapt PX4 to use NED correctly
-
         buf.write(u"};\n\n")
 
     # Print geometry indeces
@@ -384,10 +402,14 @@ if __name__ == '__main__':
                 raise ValueError('Duplicated mixer key "{}" for mixers "{}" and "{}"'.format(
                     key_i, name_i, name_j))
 
+    disable_mode = False
+
     # Generate header file
     header = generate_mixer_multirotor_header(geometries_list,
                                               use_normalized_mix=args.normalize,
-                                              use_6dof=args.sixdof)
+                                              use_6dof=args.sixdof,
+                                              motor_disable_mode=disable_mode,
+                                              motor_disabled=2)
 
     if args.outputfile is not None:
         # Write header file

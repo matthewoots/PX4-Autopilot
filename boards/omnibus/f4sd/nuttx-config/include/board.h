@@ -240,10 +240,14 @@
 /* UART1:
  *
  * PA10 (RX) and PA9 (TX) are broken out on J5
+ *
+ * #define GPIO_USART1_RX GPIO_USART1_RX_1
+ * #define GPIO_USART1_TX GPIO_USART1_TX_1
+ *
  */
 
 #define GPIO_USART1_RX GPIO_USART1_RX_1
-#define GPIO_USART1_TX GPIO_USART1_TX_1
+#define GPIO_USART1_TX GPIO_USART1_TX_2
 
 /* USART3:
  *
@@ -262,6 +266,10 @@
  * PA0 (TX) -- Labeled RSSI on the silkscreen is only broken out on a test pad
  *             on the pro version. It's on a 2.54mm header on other versions
  * PA1 (RX) -- Motor 5 out
+ *
+ * #define GPIO_UART4_RX	GPIO_UART4_RX_1
+ * #define GPIO_UART4_TX	GPIO_UART4_TX_1
+ *
  */
 #define GPIO_UART4_RX	GPIO_UART4_RX_1
 #define GPIO_UART4_TX	GPIO_UART4_TX_1
@@ -280,6 +288,11 @@
  *  CLK: PA5
  *  MISO: PA6
  *  MOSI: PA7
+ *
+ * #define GPIO_SPI1_SCK  GPIO_SPI1_SCK_1 OMNIBUSF4SD
+ * #define GPIO_SPI1_MISO GPIO_SPI1_MISO_1 OMNIBUSF4SD
+ * #define GPIO_SPI1_MOSI GPIO_SPI1_MOSI_1 OMNIBUSF4SD
+ *
  */
 
 #define GPIO_SPI1_SCK  GPIO_SPI1_SCK_1
@@ -292,11 +305,16 @@
  *  CLK: PB13
  *  MISO: PB14
  *  MOSI: PB15
+ *
+ * #define GPIO_SPI2_SCK  GPIO_SPI2_SCK_2 OMNIBUSF4SD
+ * #define GPIO_SPI2_MISO GPIO_SPI2_MISO_1 OMNIBUSF4SD
+ * #define GPIO_SPI2_MOSI GPIO_SPI2_MOSI_1 OMNIBUSF4SD
+ *
  */
 
-#define GPIO_SPI2_SCK	  GPIO_SPI2_SCK_2
-#define GPIO_SPI2_MISO	GPIO_SPI2_MISO_1
-#define GPIO_SPI2_MOSI	GPIO_SPI2_MOSI_1
+#define GPIO_SPI2_SCK	  GPIO_SPI2_SCK_3
+#define GPIO_SPI2_MISO	GPIO_SPI2_MISO_3
+#define GPIO_SPI2_MOSI	GPIO_SPI2_MOSI_3
 
 /* SPI3:
  *  BMP280
@@ -304,6 +322,11 @@
  *  CLK: PC10
  *  MISO: PC11
  *  MOSI: PC12
+ *
+ * #define GPIO_SPI3_SCK  GPIO_SPI3_SCK_2 OMNIBUSF4SD
+ * #define GPIO_SPI3_MISO GPIO_SPI3_MISO_2 OMNIBUSF4SD
+ * #define GPIO_SPI3_MOSI GPIO_SPI3_MOSI_2 OMNIBUSF4SD
+ *
  */
 
 #define GPIO_SPI3_SCK  GPIO_SPI3_SCK_2
@@ -320,8 +343,12 @@
  *   The optional _GPIO configurations allow the I2C driver to manually
  *   reset the bus to clear stuck slaves.  They match the pin configuration,
  *   but are normally-high GPIOs.
+ *
+ * #define GPIO_I2C2_SCL		GPIO_I2C2_SCL_1 OMNIBUSF4SD
+ * #define GPIO_I2C2_SDA		GPIO_I2C2_SDA_1 OMNIBUSF4SD
+ *
  */
-#define GPIO_I2C2_SCL		GPIO_I2C2_SCL_1
-#define GPIO_I2C2_SDA		GPIO_I2C2_SDA_1
+#define GPIO_I2C2_SCL		GPIO_I2C1_SCL_2
+#define GPIO_I2C2_SDA		GPIO_I2C1_SDA_2
 
 #endif  /* __CONFIG_OMNIBUSF4SD_INCLUDE_BOARD_H */
