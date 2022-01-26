@@ -68,11 +68,17 @@
  *
  * These are the channel numbers of the ADCs of the microcontroller that can be used by the Px4 Firmware in the adc driver
  */
-#define ADC_CHANNELS (1 << 0) | (1 << 11) | (1 << 12)
+// #define ADC_CHANNELS (1 << 0) | (1 << 11) | (1 << 12)
 
-#define ADC_BATTERY_VOLTAGE_CHANNEL  12
-#define ADC_BATTERY_CURRENT_CHANNEL  11
-#define ADC_RC_RSSI_CHANNEL          0
+#define ADC_BATTERY_VOLTAGE_CHANNEL  13
+#define ADC_BATTERY_CURRENT_CHANNEL  12
+// #define ADC_BATTERY_VOLTAGE_CHANNEL  12
+// #define ADC_BATTERY_CURRENT_CHANNEL  11
+#define ADC_RC_RSSI_CHANNEL          15
+
+#define ADC_CHANNELS ((1 << ADC_BATTERY_VOLTAGE_CHANNEL) | \
+	(1 << ADC_BATTERY_CURRENT_CHANNEL) | \
+	(1 << ADC_RC_RSSI_CHANNEL))
 
 /* Define Battery 1 Voltage Divider and A per V
  */

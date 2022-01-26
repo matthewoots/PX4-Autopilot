@@ -1,0 +1,195 @@
+Entering CLI Mode, type 'exit' to return, or 'help'
+
+
+
+# 
+# Building AutoComplete Cache ... Done!
+# 
+# resource
+resource BEEPER 1 B04
+resource MOTOR 1 B00
+resource MOTOR 2 B01
+resource MOTOR 3 A03
+resource MOTOR 4 A02
+resource MOTOR 5 A01
+resource MOTOR 6 A08
+resource PPM 1 B08
+resource PWM 1 B08
+resource PWM 2 B09
+resource PWM 3 C06
+resource PWM 4 C07
+resource PWM 5 C08
+resource PWM 6 C09
+resource SONAR_TRIGGER 1 A01
+resource SONAR_ECHO 1 A08
+resource LED_STRIP 1 B06
+resource SERIAL_TX 1 A09
+resource SERIAL_TX 3 B10
+resource SERIAL_TX 6 C06
+resource SERIAL_RX 1 A10
+resource SERIAL_RX 3 B11
+resource SERIAL_RX 6 C07
+resource INVERTER 3 C09
+resource INVERTER 6 C08
+resource LED 1 B05
+resource SPI_SCK 1 A05
+resource SPI_SCK 2 B13
+resource SPI_SCK 3 C10
+resource SPI_MISO 1 A06
+resource SPI_MISO 2 B14
+resource SPI_MISO 3 C11
+resource SPI_MOSI 1 A07
+resource SPI_MOSI 2 B15
+resource SPI_MOSI 3 C12
+resource ADC_BATT 1 C02
+resource ADC_RSSI 1 A00
+resource ADC_CURR 1 C01
+resource BARO_CS 1 B03
+resource SDCARD_CS 1 B12
+resource SDCARD_DETECT 1 B07
+resource FLASH_CS 1 B12
+resource OSD_CS 1 A15
+resource GYRO_EXTI 1 C04
+resource GYRO_CS 1 A04
+resource USB_DETECT 1 C05
+
+# resource show all
+Currently active IO resource assignments:
+(reboot to update)
+--------------------
+A00: FREE
+A01: FREE
+A02: MOTOR 4
+A03: MOTOR 3
+A04: GYRO_CS 1
+A05: SPI_SCK 1
+A06: SPI_MISO 1
+A07: SPI_MOSI 1
+A08: FREE
+A09: FREE
+A10: FREE
+A11: USB
+A12: USB
+A13: SWD
+A14: SWD
+A15: OSD_CS
+B00: MOTOR 1
+B01: MOTOR 2
+B02: FREE
+B03: PREINIT
+B04: BEEPER
+B05: LED 1
+B06: FREE
+B07: SDCARD_DETECT
+B08: FREE
+B09: FREE
+B10: FREE
+B11: FREE
+B12: SDCARD_CS
+B13: SPI_SCK 2
+B14: SPI_MISO 2
+B15: SPI_MOSI 2
+C00: FREE
+C01: ADC_CURR
+C02: ADC_BATT
+C03: FREE
+C04: GYRO_EXTI
+C05: FREE
+C06: FREE
+C07: SERIAL_RX 6
+C08: INVERTER 6
+C09: INVERTER 3
+C10: SPI_SCK 3
+C11: SPI_MISO 3
+C12: SPI_MOSI 3
+C13: FREE
+C14: FREE
+C15: FREE
+D00: FREE
+D01: FREE
+D02: FREE
+D03: FREE
+D04: FREE
+D05: FREE
+D06: FREE
+D07: FREE
+D08: FREE
+D09: FREE
+D10: FREE
+D11: FREE
+D12: FREE
+D13: FREE
+D14: FREE
+D15: FREE
+E00: FREE
+E01: FREE
+E02: FREE
+E03: FREE
+E04: FREE
+E05: FREE
+E06: FREE
+E07: FREE
+E08: FREE
+E09: FREE
+E10: FREE
+E11: FREE
+E12: FREE
+E13: FREE
+E14: FREE
+E15: FREE
+F00: FREE
+F01: FREE
+F02: FREE
+F03: FREE
+F04: FREE
+F05: FREE
+F06: FREE
+F07: FREE
+F08: FREE
+F09: FREE
+F10: FREE
+F11: FREE
+F12: FREE
+F13: FREE
+F14: FREE
+F15: FREE
+
+Currently active Timers:
+-----------------------
+TIM1: FREE
+TIM2:
+    CH3: MOTOR 4
+    CH4: MOTOR 3
+TIM3:
+    CH3: MOTOR 1
+    CH4: MOTOR 2
+TIM4: FREE
+TIM5: FREE
+TIM6: FREE
+TIM7: FREE
+TIM8: FREE
+TIM9: FREE
+TIM10: FREE
+TIM11: FREE
+TIM12: FREE
+TIM13: FREE
+TIM14: FREE
+
+Currently active DMA:
+--------------------
+DMA1 Stream 0: FREE
+DMA1 Stream 1: FREE
+DMA1 Stream 2: FREE
+DMA1 Stream 3: FREE
+DMA1 Stream 4: FREE
+DMA1 Stream 5: FREE
+DMA1 Stream 6: FREE
+DMA1 Stream 7: FREE
+DMA2 Stream 0: FREE
+DMA2 Stream 1: FREE
+DMA2 Stream 2: FREE
+DMA2 Stream 3: ADC 2
+DMA2 Stream 4: FREE
+DMA2 Stream 5: FREE
+DMA2 Stream 6: FREE
+DMA2 Stream 7: FREE

@@ -26,8 +26,8 @@ px4_add_board(
 		imu/invensense/mpu6000
 		#irlock
 		lights/rgbled
-		#magnetometer # all available magnetometer drivers
-		magnetometer/hmc5883
+		magnetometer # all available magnetometer drivers
+		#magnetometer/hmc5883
 		#optical_flow # all available optical flow drivers
 		osd
 		#pca9685

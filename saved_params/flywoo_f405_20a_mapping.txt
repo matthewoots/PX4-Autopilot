@@ -1,0 +1,190 @@
+Entering CLI Mode, type 'exit' to return, or 'help'
+
+
+
+# 
+# Building AutoComplete Cache ... Done!
+# 
+# resource
+resource BEEPER 1 C13
+resource MOTOR 1 B00
+resource MOTOR 2 B01
+resource MOTOR 3 A03
+resource MOTOR 4 A02
+resource MOTOR 5 B05
+resource MOTOR 6 B07
+resource MOTOR 7 C09
+resource MOTOR 8 C08
+resource PPM 1 B08
+resource LED_STRIP 1 A09
+resource SERIAL_TX 1 B06
+resource SERIAL_TX 2 D05
+resource SERIAL_TX 3 B10
+resource SERIAL_TX 4 A00
+resource SERIAL_TX 6 C06
+resource SERIAL_RX 1 A10
+resource SERIAL_RX 2 D06
+resource SERIAL_RX 3 B11
+resource SERIAL_RX 4 A01
+resource SERIAL_RX 5 D02
+resource SERIAL_RX 6 C07
+resource I2C_SCL 1 B08
+resource I2C_SDA 1 B09
+resource LED 1 C14
+resource SPI_SCK 1 A05
+resource SPI_SCK 3 C10
+resource SPI_MISO 1 A06
+resource SPI_MISO 3 C11
+resource SPI_MOSI 1 A07
+resource SPI_MOSI 3 C12
+resource ESCSERIAL 1 B08
+resource ADC_BATT 1 C03
+resource ADC_RSSI 1 C00
+resource ADC_CURR 1 C02
+resource FLASH_CS 1 B03
+resource OSD_CS 1 B14
+resource GYRO_EXTI 1 B13
+resource GYRO_CS 1 B12
+resource USB_DETECT 1 A08
+
+# resource show all
+Currently active IO resource assignments:
+(reboot to update)
+--------------------
+A00: FREE
+A01: FREE
+A02: MOTOR 4
+A03: MOTOR 3
+A04: FREE
+A05: SPI_SCK 1
+A06: SPI_MISO 1
+A07: SPI_MOSI 1
+A08: FREE
+A09: LED_STRIP
+A10: FREE
+A11: USB
+A12: USB
+A13: SWD
+A14: SWD
+A15: FREE
+B00: MOTOR 1
+B01: MOTOR 2
+B02: FREE
+B03: FLASH_CS
+B04: FREE
+B05: FREE
+B06: FREE
+B07: FREE
+B08: I2C_SCL 1
+B09: I2C_SDA 1
+B10: FREE
+B11: FREE
+B12: GYRO_CS 1
+B13: GYRO_EXTI
+B14: OSD_CS
+B15: FREE
+C00: ADC_RSSI
+C01: FREE
+C02: ADC_CURR
+C03: ADC_BATT
+C04: FREE
+C05: FREE
+C06: FREE
+C07: FREE
+C08: FREE
+C09: FREE
+C10: SPI_SCK 3
+C11: SPI_MISO 3
+C12: SPI_MOSI 3
+C13: BEEPER
+C14: LED 1
+C15: FREE
+D00: FREE
+D01: FREE
+D02: FREE
+D03: FREE
+D04: FREE
+D05: FREE
+D06: FREE
+D07: FREE
+D08: FREE
+D09: FREE
+D10: FREE
+D11: FREE
+D12: FREE
+D13: FREE
+D14: FREE
+D15: FREE
+E00: FREE
+E01: FREE
+E02: FREE
+E03: FREE
+E04: FREE
+E05: FREE
+E06: FREE
+E07: FREE
+E08: FREE
+E09: FREE
+E10: FREE
+E11: FREE
+E12: FREE
+E13: FREE
+E14: FREE
+E15: FREE
+F00: FREE
+F01: FREE
+F02: FREE
+F03: FREE
+F04: FREE
+F05: FREE
+F06: FREE
+F07: FREE
+F08: FREE
+F09: FREE
+F10: FREE
+F11: FREE
+F12: FREE
+F13: FREE
+F14: FREE
+F15: FREE
+
+Currently active Timers:
+-----------------------
+TIM1:
+    CH2: LED_STRIP
+TIM2:
+    CH3: MOTOR 4
+    CH4: MOTOR 3
+TIM3:
+    CH3: MOTOR 1
+    CH4: MOTOR 2
+TIM4: FREE
+TIM5: FREE
+TIM6: FREE
+TIM7: FREE
+TIM8: FREE
+TIM9: FREE
+TIM10: FREE
+TIM11: FREE
+TIM12: FREE
+TIM13: FREE
+TIM14: FREE
+
+Currently active DMA:
+--------------------
+DMA1 Stream 0: FREE
+DMA1 Stream 1: FREE
+DMA1 Stream 2: TIMUP 3
+DMA1 Stream 3: FREE
+DMA1 Stream 4: FREE
+DMA1 Stream 5: FREE
+DMA1 Stream 6: FREE
+DMA1 Stream 7: TIMUP 2
+DMA2 Stream 0: ADC 1
+DMA2 Stream 1: FREE
+DMA2 Stream 2: FREE
+DMA2 Stream 3: FREE
+DMA2 Stream 4: FREE
+DMA2 Stream 5: FREE
+DMA2 Stream 6: LED_STRIP
+DMA2 Stream 7: FREE
