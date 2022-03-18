@@ -243,7 +243,7 @@
  */
 
 #define GPIO_USART1_RX GPIO_USART1_RX_1
-#define GPIO_USART1_TX GPIO_USART1_TX_1
+#define GPIO_USART1_TX GPIO_USART1_TX_2
 
 /* USART3:
  *
@@ -294,9 +294,9 @@
  *  MOSI: PB15
  */
 
-#define GPIO_SPI2_SCK	  GPIO_SPI2_SCK_2
-#define GPIO_SPI2_MISO	GPIO_SPI2_MISO_1
-#define GPIO_SPI2_MOSI	GPIO_SPI2_MOSI_1
+#define GPIO_SPI2_SCK	  GPIO_SPI2_SCK_3
+#define GPIO_SPI2_MISO	GPIO_SPI2_MISO_3
+#define GPIO_SPI2_MOSI	GPIO_SPI2_MOSI_3
 
 /* SPI3:
  *  BMP280
@@ -321,7 +321,7 @@
  *   reset the bus to clear stuck slaves.  They match the pin configuration,
  *   but are normally-high GPIOs.
  */
-#define GPIO_I2C2_SCL		GPIO_I2C2_SCL_1
-#define GPIO_I2C2_SDA		GPIO_I2C2_SDA_1
+#define GPIO_I2C1_SCL		GPIO_I2C1_SCL_2
+#define GPIO_I2C1_SDA		GPIO_I2C1_SDA_2
 
 #endif  /* __CONFIG_OMNIBUSF4SD_INCLUDE_BOARD_H */

@@ -20,16 +20,16 @@ px4_add_board(
 		#distance_sensor # all available distance sensor drivers
 		dshot
 		gps
-		imu/invensense/icm20602
+		#imu/invensense/icm20602
 		imu/invensense/mpu6000
 		#irlock
 		#lights/blinkm
-		lights/rgbled
+		#lights/rgbled
 		#magnetometer # all available magnetometer drivers
-		magnetometer/hmc5883
+		magnetometer/qmc5883
 		#mkblctrl
-		optical_flow/px4flow
-		osd
+		#optical_flow/px4flow
+		#osd
 		#pca9685
 		#pwm_input
 		#pwm_out_sim
@@ -37,11 +37,11 @@ px4_add_board(
 		rc_input
 		#tap_esc
 		#telemetry # all available telemetry drivers
-		telemetry/frsky_telemetry
+		#telemetry/frsky_telemetry
 		#test_ppm
 	MODULES
 		#airspeed_selector
-		attitude_estimator_q
+		#attitude_estimator_q
 		battery_status
 		#camera_feedback
 		commander

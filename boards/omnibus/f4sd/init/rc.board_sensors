@@ -11,4 +11,5 @@ then
 	icm20602 -s -R 6 start
 fi
 
-bmp280 -s start
+bmp280 -X start
+qmc5883l -X start
