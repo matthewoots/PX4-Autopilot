@@ -5,4 +5,4 @@
 
 # Start MAVLink on the USB port
 mavlink start -d /dev/ttyACM0
-mavlink start -d /dev/ttyS1 -b 500000
+#mavlink start -d /dev/ttyS1 -b 500000 -m onboard
