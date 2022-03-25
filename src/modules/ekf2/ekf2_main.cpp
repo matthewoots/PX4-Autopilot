@@ -82,6 +82,9 @@
 
 #include "Utility/PreFlightChecker.hpp"
 
+#include <systemlib/mavlink_log.h>
+#include <uORB/topics/mavlink_log.h>
+
 // defines used to specify the mask position for use of different accuracy metrics in the GPS blending algorithm
 #define BLEND_MASK_USE_SPD_ACC      1
 #define BLEND_MASK_USE_HPOS_ACC     2
@@ -93,6 +96,8 @@
 
 using math::constrain;
 using namespace time_literals;
+
+static orb_advert_t mavlink_log_pub = nullptr;
 
 class Ekf2 final : public ModuleBase<Ekf2>, public ModuleParams, public px4::ScheduledWorkItem
 {
@@ -1103,6 +1108,9 @@ void Ekf2::Run()
 		// get external vision data
 		// if error estimates are unavailable, use parameter defined defaults
 		new_ev_data_received = false;
+		static uint64_t ev_data_first_present = 0;
+		static uint64_t ev_data_last_present = 0;
+		static bool ev_data_prescent = false;
 
 		if (_ev_odom_sub.updated()) {
 			new_ev_data_received = true;
@@ -1185,6 +1193,41 @@ void Ekf2::Run()
 
 			ekf2_timestamps.visual_odometry_timestamp_rel = (int16_t)((int64_t)_ev_odom.timestamp / 100 -
 					(int64_t)ekf2_timestamps.timestamp / 100);
+
+						if (ev_data_first_present == 0){
+
+				// mavlink_log_warning(&mavlink_log_pub, "EKF2 First EV Data Received, Slack %.2f ms", ekf2_timestamps.visual_odometry_timestamp_rel/10.0 );
+
+				ev_data_first_present = _ev_odom.timestamp_sample; // in us
+
+			}
+
+
+			ev_data_last_present = _ev_odom.timestamp_sample;
+
+			if (ev_data_last_present - ev_data_first_present >= 5e5){ // 500ms stable stream
+
+				if (!ev_data_prescent)
+
+					mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream Slack %d ms", ekf2_timestamps.visual_odometry_timestamp_rel/10 );
+
+				ev_data_prescent = true;
+
+			}
+
+
+		}else{
+
+			if (ev_data_prescent && _ekf.isTimedOut(_ev_odom.timestamp, 1e6)){ //hm: last reception of ev is at least 1s ago
+
+				ev_data_prescent = false;
+
+				ev_data_first_present = 0;
+
+				mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream Lost");
+
+			}
+
 		}
 
 		bool vehicle_land_detected_updated = _vehicle_land_detected_sub.updated();
