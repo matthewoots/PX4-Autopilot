@@ -1479,7 +1479,6 @@ bool EKF2::UpdateExtVisionSample(ekf2_timestamps_s &ekf2_timestamps, vehicle_odo
 
 			if (present_count % 100 == 1){
 				mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream Slack %d ms", ekf2_timestamps.visual_odometry_timestamp_rel/10 );
-				mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream sample - now %lld us", (int64_t)ev_odom.timestamp_sample - (int64_t)ev_odom.timestamp  );
 			}
 
 
