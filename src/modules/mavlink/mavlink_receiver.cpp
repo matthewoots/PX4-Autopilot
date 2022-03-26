@@ -1212,6 +1212,8 @@ MavlinkReceiver::handle_message_gps_global_origin(mavlink_message_t *msg)
 void
 MavlinkReceiver::handle_message_vision_position_estimate(mavlink_message_t *msg)
 {
+	if (!_mavlink_timesync.sync_converged())
+		return;
 	mavlink_vision_position_estimate_t ev;
 	mavlink_msg_vision_position_estimate_decode(msg, &ev);
 
@@ -1251,6 +1253,8 @@ MavlinkReceiver::handle_message_vision_position_estimate(mavlink_message_t *msg)
 void
 MavlinkReceiver::handle_message_odometry(mavlink_message_t *msg)
 {
+	if (!_mavlink_timesync.sync_converged())
+		return;
 	mavlink_odometry_t odom;
 	mavlink_msg_odometry_decode(msg, &odom);
 
