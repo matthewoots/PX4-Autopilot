@@ -108,6 +108,12 @@ public:
 	 */
 	uint64_t sync_stamp(uint64_t usec);
 
+	/**
+	 * Return true if the timesync algorithm converged to a good estimate,
+	 * return false otherwise
+	 */
+	bool sync_converged();
+
 private:
 
 	/* do not allow top copying this class */
@@ -121,11 +127,6 @@ protected:
 	 */
 	void add_sample(int64_t offset_us);
 
-	/**
-	 * Return true if the timesync algorithm converged to a good estimate,
-	 * return false otherwise
-	 */
-	bool sync_converged();
 
 	/**
 	 * Reset the exponential filter and its states

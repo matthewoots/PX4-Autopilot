@@ -33,11 +33,16 @@
 
 #include "EKF2.hpp"
 
+#include <systemlib/mavlink_log.h>
+#include <uORB/topics/mavlink_log.h>
+
 using namespace time_literals;
 using math::constrain;
 using matrix::Eulerf;
 using matrix::Quatf;
 using matrix::Vector3f;
+
+static orb_advert_t mavlink_log_pub = nullptr;
 
 pthread_mutex_t ekf2_module_mutex = PTHREAD_MUTEX_INITIALIZER;
 static px4::atomic<EKF2 *> _objects[EKF2_MAX_INSTANCES] {};
@@ -1365,6 +1370,11 @@ bool EKF2::UpdateExtVisionSample(ekf2_timestamps_s &ekf2_timestamps, vehicle_odo
 	bool new_ev_odom = false;
 	const unsigned last_generation = _ev_odom_sub.get_last_generation();
 
+	// facilitate printing of EV slack
+	static uint64_t ev_data_first_present = 0;
+	static uint64_t ev_data_last_present = 0;
+	static bool ev_data_prescent = false;
+
 	if (_ev_odom_sub.update(&ev_odom)) {
 		if (_msg_missed_odometry_perf == nullptr) {
 			_msg_missed_odometry_perf = perf_alloc(PC_COUNT, MODULE_NAME": vehicle_visual_odometry messages missed");
@@ -1450,8 +1460,42 @@ bool EKF2::UpdateExtVisionSample(ekf2_timestamps_s &ekf2_timestamps, vehicle_odo
 
 		new_ev_odom = true;
 
-		ekf2_timestamps.visual_odometry_timestamp_rel = (int16_t)((int64_t)ev_odom.timestamp / 100 -
+		ekf2_timestamps.visual_odometry_timestamp_rel = (int16_t)((int64_t)ev_odom.timestamp_sample / 100 -
 				(int64_t)ekf2_timestamps.timestamp / 100);
+
+		if (ev_data_first_present == 0){
+			ev_data_first_present = ev_odom.timestamp_sample; // in us
+		}
+
+		ev_data_last_present = ev_odom.timestamp_sample;
+
+		if (ev_data_last_present - ev_data_first_present >= 5e5){ // 500ms stable stream
+
+			// if (!ev_data_prescent)
+
+			static uint64_t present_count = 0;
+
+			present_count++;
+
+			if (present_count % 100 == 1){
+				mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream Slack %d ms", ekf2_timestamps.visual_odometry_timestamp_rel/10 );
+			}
+
+
+			ev_data_prescent = true;
+
+		}
+	}else{
+
+		if (ev_data_prescent && _ekf.isTimedOut(ev_data_last_present, 1e6)){ //hm: last reception of ev is at least 1s ago
+
+			ev_data_prescent = false;
+
+			ev_data_first_present = 0;
+
+			mavlink_log_warning(&mavlink_log_pub, "EKF2 EV Stream Lost");
+
+		}
 	}
 
 	return new_ev_odom;

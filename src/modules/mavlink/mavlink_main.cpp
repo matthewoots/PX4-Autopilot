@@ -1855,7 +1855,7 @@ Mavlink::task_main(int argc, char *argv[])
 	_baudrate = 57600;
 	_datarate = 0;
 	_mode = MAVLINK_MODE_COUNT;
-	FLOW_CONTROL_MODE _flow_control = FLOW_CONTROL_AUTO;
+	FLOW_CONTROL_MODE _flow_control = FLOW_CONTROL_OFF;
 
 	_interface_name = nullptr;
 
