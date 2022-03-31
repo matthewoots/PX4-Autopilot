@@ -19,7 +19,7 @@ px4_add_board(
 		#batt_smbus
 		#camera_trigger
 		#differential_pressure # all available differential pressure drivers
-		#distance_sensor # all available distance sensor drivers
+		distance_sensor/tfmini # all available distance sensor drivers
 		dshot
 		gps
 		imu/invensense/icm20602
@@ -36,7 +36,7 @@ px4_add_board(
 		pwm_out
 		rc_input
 		#telemetry # all available telemetry drivers
-		telemetry/frsky_telemetry
+		#telemetry/frsky_telemetry
 	MODULES
 		#airspeed_selector
 		attitude_estimator_q
