@@ -75,7 +75,7 @@ static constexpr double BETA_GAIN_FINAL = 0.003;
 // exhanged timesync packets is less than CONVERGENCE_WINDOW. A lower value will
 // allow the timesync to converge faster, but with potentially less accurate initial
 // offset and skew estimates.
-static constexpr uint32_t CONVERGENCE_WINDOW = 500;
+static constexpr uint32_t CONVERGENCE_WINDOW = 30;
 
 // Outlier rejection and filter reset
 //
