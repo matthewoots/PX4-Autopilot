@@ -241,25 +241,25 @@ bool PreFlightCheck::ekf2CheckSensorBias(orb_advert_t *mavlink_log_pub, const bo
 	if (hrt_elapsed_time(&bias.timestamp) < 30_s) {
 
 		// check accelerometer bias estimates
-		if (bias.accel_bias_valid) {
-			const float ekf_ab_test_limit = 0.75f * bias.accel_bias_limit;
+		// if (bias.accel_bias_valid) {
+		// 	const float ekf_ab_test_limit = 0.75f * bias.accel_bias_limit;
 
-			for (uint8_t axis_index = 0; axis_index < 3; axis_index++) {
-				// allow for higher uncertainty in estimates for axes that are less observable to prevent false positives
-				// adjust test threshold by 3-sigma
-				const float test_uncertainty = 3.0f * sqrtf(fmaxf(bias.accel_bias_variance[axis_index], 0.0f));
+		// 	for (uint8_t axis_index = 0; axis_index < 3; axis_index++) {
+		// 		// allow for higher uncertainty in estimates for axes that are less observable to prevent false positives
+		// 		// adjust test threshold by 3-sigma
+		// 		const float test_uncertainty = 3.0f * sqrtf(fmaxf(bias.accel_bias_variance[axis_index], 0.0f));
 
-				if (fabsf(bias.accel_bias[axis_index]) > ekf_ab_test_limit + test_uncertainty) {
-					if (report_fail) {
-						PX4_ERR("accel bias (axis %d): |%.8f| > %.8f + %.8f", axis_index,
-							(double)bias.accel_bias[axis_index], (double)ekf_ab_test_limit, (double)test_uncertainty);
-						mavlink_log_critical(mavlink_log_pub, "Preflight Fail: High Accelerometer Bias");
-					}
+		// 		if (fabsf(bias.accel_bias[axis_index]) > ekf_ab_test_limit + test_uncertainty) {
+		// 			if (report_fail) {
+		// 				PX4_ERR("accel bias (axis %d): |%.8f| > %.8f + %.8f", axis_index,
+		// 					(double)bias.accel_bias[axis_index], (double)ekf_ab_test_limit, (double)test_uncertainty);
+		// 				mavlink_log_critical(mavlink_log_pub, "Preflight Fail: High Accelerometer Bias");
+		// 			}
 
-					return false;
-				}
-			}
-		}
+		// 			return false;
+		// 		}
+		// 	}
+		// }
 
 		// check gyro bias estimates
 		if (bias.gyro_bias_valid) {
