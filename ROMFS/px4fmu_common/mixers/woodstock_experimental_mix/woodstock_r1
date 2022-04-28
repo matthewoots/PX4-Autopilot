@@ -1,0 +1,64 @@
+Mixer for Woodstock R1
+=========================================================
+# Outer ailerons use 0 of [yaw] value when mixed
+
+# empty
+Z:
+
+###################
+# 1 = throttle
+# mixer for the pusher/puller throttle
+M: 1
+O:      10000  10000      0 -10000  10000
+S: 0 3      0  20000 -10000 -10000  10000
+
+###################
+# ORDER IS LEFT THEN RIGHT
+###################
+# 2 & 3 = elevator
+# mixer for the elevator - Left
+M: 1
+O:      10000  10000   0 -10000  10000
+S: 0 1  -10000  -10000    0 -10000  10000
+
+# mixer for the elevator - Right
+M: 1
+O:       10000   10000   0 -10000  10000
+S: 0 1   10000   10000    0 -10000  10000
+
+###################
+# Left Aileron 4out : Right Aileron 5out ;  Left Aileron 6in : Right Aileron 7in
+# 4 & 6 = Yaw Right ; 5 & 7 = Yaw left
+# SERVO = ((roll input * (S_1)(value/10000) + 0) * 1 + (yaw input * (S_2)(value/10000) + 0) * 1 ) * 1 + 0
+
+# mixer for the Outer left aileron
+M: 1
+O:      10000  10000   0 -10000  10000
+S: 0 0  -10000  -10000    0 -10000  10000
+
+# mixer for the Outer right aileron
+M: 1
+O:      10000  10000   0 -10000  10000
+S: 0 0  -10000  -10000    0 -10000  10000
+
+# mixer for the Inner left aileron
+M: 2
+O:      10000  10000   0 -10000  10000
+S: 0 0  10000  10000    0 -10000  10000
+S: 0 2   4000  0      0 -10000  10000
+
+# mixer for the Inner right aileron
+M: 2
+O:      10000  10000   0 -10000  10000
+S: 0 0  10000  10000    0 -10000  10000
+S: 0 2    0  4000  0 -10000  10000
+
+###################
+# Fake Rudder is on 8
+# mixer for the rudder
+M: 1
+O:       10000   10000   0 -10000  10000
+S: 0 2   10000   10000    0 -10000  10000
+
+# empty
+Z:
