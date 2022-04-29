@@ -5,6 +5,17 @@
 
 board_adc start
 
+param set-default BAT1_V_DIV 11.0
+param set-default BAT1_A_PER_V 40.0
+
+# system_power unavailable
+param set-default CBRK_SUPPLY_CHK 894281
+
+# Disable safety switch by default
+param set-default CBRK_IO_SAFETY 22027
+
+param set-default SYS_AUTOSTART 2021
+
 # Internal SPI bus ICM-42605
 if ! icm42605 -R 14 -s start
 then
@@ -20,14 +31,6 @@ dps310 -I start -a 118
 
 # External mag
 qmc5883l -X start -a 13
-
-# system_power unavailable
-param set-default CBRK_SUPPLY_CHK 894281
-
-# Disable safety switch by default
-param set-default CBRK_IO_SAFETY 22027
-
-param set-default SYS_AUTOSTART 2021
 
 # Gyro
 param set-default CAL_GYRO0_ID 2687010
