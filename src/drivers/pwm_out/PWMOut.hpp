@@ -69,7 +69,7 @@ using namespace time_literals;
 
 #define PX4FMU_DEVICE_PATH	"/dev/px4fmu"
 
-static constexpr int PWM_OUT_MAX_INSTANCES{(DIRECT_PWM_OUTPUT_CHANNELS > 8) ? 2 : 1};
+static constexpr int PWM_OUT_MAX_INSTANCES{(DIRECT_PWM_OUTPUT_CHANNELS > 12) ? 2 : 1};
 extern pthread_mutex_t pwm_out_module_mutex;
 
 class PWMOut : public cdev::CDev, public OutputModuleInterface
@@ -125,7 +125,7 @@ private:
 	const int _instance;
 	const uint32_t _output_base;
 
-	static const int MAX_PER_INSTANCE{8};
+	static const int MAX_PER_INSTANCE{12};
 
 	MixingOutput _mixing_output {PARAM_PREFIX, FMU_MAX_ACTUATORS, *this, MixingOutput::SchedulingPolicy::Auto, true};
 

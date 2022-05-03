@@ -194,6 +194,30 @@ typedef uint16_t	servo_position_t;
 /** force safety switch on (to enable use of safety switch) */
 #define PWM_SERVO_SET_FORCE_SAFETY_ON		_PX4_IOC(_PWM_SERVO_BASE, 28)
 
+
+/** set auxillary output mode. These correspond to enum Mode in px4fmu/fmu.cpp */
+#define PWM_SERVO_MODE_NONE         0
+#define PWM_SERVO_MODE_1PWM         1
+#define PWM_SERVO_MODE_2PWM         2
+#define PWM_SERVO_MODE_2PWM2CAP     3
+#define PWM_SERVO_MODE_3PWM         4
+#define PWM_SERVO_MODE_3PWM1CAP     5
+#define PWM_SERVO_MODE_4PWM         6
+#define PWM_SERVO_MODE_4PWM1CAP     7
+#define PWM_SERVO_MODE_4PWM2CAP     8
+#define PWM_SERVO_MODE_5PWM         9
+#define PWM_SERVO_MODE_5PWM1CAP    10
+#define PWM_SERVO_MODE_6PWM        11
+#define PWM_SERVO_MODE_8PWM        12
+#define PWM_SERVO_MODE_12PWM       13
+#define PWM_SERVO_MODE_14PWM       14
+#define PWM_SERVO_MODE_4CAP        15
+#define PWM_SERVO_MODE_5CAP        16
+#define PWM_SERVO_MODE_6CAP        17
+#define PWM_SERVO_ENTER_TEST_MODE  18
+#define PWM_SERVO_EXIT_TEST_MODE   19
+#define PWM_SERVO_SET_MODE         _PX4_IOC(_PWM_SERVO_BASE, 34)
+
 /*
  *
  *
@@ -201,6 +225,9 @@ typedef uint16_t	servo_position_t;
  *
  *
  */
+
+/** set a single servo to a specific value */
+#define PWM_SERVO_SET(_servo)	_PX4_IOC(_PWM_SERVO_BASE, 0x30 + _servo)
 
 /** get a single specific servo value */
 #define PWM_SERVO_GET(_servo)	_PX4_IOC(_PWM_SERVO_BASE, 0x50 + _servo)

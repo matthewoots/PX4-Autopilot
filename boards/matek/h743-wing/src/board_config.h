@@ -65,6 +65,7 @@
 #define BOARD_ARMED_STATE_LED           1 // Green LED
 #define BOARD_OVERLOAD_LED              0 // Blue LED
 
+#define TIM8_USE_COMPLEMENTARY		1
 
 /*
  * ADC channels
@@ -121,7 +122,7 @@
 /* PWM
  */
 #define DIRECT_PWM_OUTPUT_CHANNELS   12
-#define DIRECT_INPUT_TIMER_CHANNELS  12
+#define BOARD_NUM_IO_TIMERS  4
 
 #define BOARD_HAS_PWM  DIRECT_PWM_OUTPUT_CHANNELS
 
@@ -186,8 +187,6 @@
 	}
 
 #define BOARD_ENABLE_CONSOLE_BUFFER
-
-#define BOARD_NUM_IO_TIMERS 4
 
 
 __BEGIN_DECLS

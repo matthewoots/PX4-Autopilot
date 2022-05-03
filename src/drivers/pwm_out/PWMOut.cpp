@@ -542,9 +542,9 @@ void PWMOut::update_params()
 	uint32_t single_ch = 0;
 	uint32_t pwm_default_channel_mask = 0;
 
-	while ((single_ch = pwm_default_channels % 10)) {
+	while ((single_ch = pwm_default_channels % 12)) {
 		pwm_default_channel_mask |= 1 << (single_ch - 1);
-		pwm_default_channels /= 10;
+		pwm_default_channels /= 12;
 	}
 
 	// update the counter
@@ -859,12 +859,14 @@ int PWMOut::pwm_ioctl(device::file_t *filp, int cmd, unsigned long arg)
 
 	case PWM_SERVO_GET(13):
 	case PWM_SERVO_GET(12):
+#endif
+#if defined(DIRECT_PWM_OUTPUT_CHANNELS) && DIRECT_PWM_OUTPUT_CHANNELS >= 8
+	// Add get 8-11 which is missing out of the 8 servo mapping
 	case PWM_SERVO_GET(11):
 	case PWM_SERVO_GET(10):
 	case PWM_SERVO_GET(9):
 	case PWM_SERVO_GET(8):
-#endif
-#if defined(DIRECT_PWM_OUTPUT_CHANNELS) && DIRECT_PWM_OUTPUT_CHANNELS >= 8
+
 	case PWM_SERVO_GET(7):
 	case PWM_SERVO_GET(6):
 #endif
@@ -899,12 +901,13 @@ int PWMOut::pwm_ioctl(device::file_t *filp, int cmd, unsigned long arg)
 #if defined(DIRECT_PWM_OUTPUT_CHANNELS) && DIRECT_PWM_OUTPUT_CHANNELS >= 8
 	case PWM_SERVO_GET_RATEGROUP(6):
 	case PWM_SERVO_GET_RATEGROUP(7):
-#endif
-#if defined(DIRECT_PWM_OUTPUT_CHANNELS) && DIRECT_PWM_OUTPUT_CHANNELS >= 14
+	// Add get 8-11 which is missing out of the 8 servo mapping
 	case PWM_SERVO_GET_RATEGROUP(8):
 	case PWM_SERVO_GET_RATEGROUP(9):
 	case PWM_SERVO_GET_RATEGROUP(10):
 	case PWM_SERVO_GET_RATEGROUP(11):
+#endif
+#if defined(DIRECT_PWM_OUTPUT_CHANNELS) && DIRECT_PWM_OUTPUT_CHANNELS >= 14
 	case PWM_SERVO_GET_RATEGROUP(12):
 	case PWM_SERVO_GET_RATEGROUP(13):
 #endif

@@ -77,6 +77,11 @@ static int io_timer_handler7(int irq, void *context, void *arg);
 #  define HW_GTIM_CCER_CC1NP    0
 #endif
 
+#if !defined(TIM8_USE_COMPLEMENTARY)
+#define TIM8_USE_COMPLEMENTARY 1
+#endif
+
+
 #define arraySize(a) (sizeof((a))/sizeof(((a)[0])))
 
 /* If the timer clock source provided as clock_freq is the STM32_APBx_TIMx_CLKIN
@@ -935,8 +940,23 @@ int io_timer_set_enable(bool state, io_timer_channel_mode_t mode, io_timer_chann
 			uint32_t shifts = timer_io_channels[chan_index].timer_channel - 1;
 			uint32_t timer = channels_timer(chan_index);
 			action_cache[timer].base  = io_timers[timer].base;
-			action_cache[timer].ccer_clearbits |= CCER_C1_INIT << (shifts * CCER_C1_NUM_BITS);
-			action_cache[timer].ccer_setbits   |= ccer_bit  << (shifts * CCER_C1_NUM_BITS);
+
+			#ifdef TIM8_USE_COMPLEMENTARY
+				if( action_cache[timer].base == STM32_TIM8_BASE )
+				{
+					action_cache[timer].ccer_clearbits |= CCER_C1_INIT << (shifts * CCER_C1_NUM_BITS + 2 );
+					action_cache[timer].ccer_setbits   |= ccer_bit  << ( shifts * CCER_C1_NUM_BITS + 2 );
+				}
+				else
+				{
+					action_cache[timer].ccer_clearbits |= CCER_C1_INIT << (shifts * CCER_C1_NUM_BITS);
+					action_cache[timer].ccer_setbits   |= ccer_bit  << (shifts * CCER_C1_NUM_BITS);
+				}
+			#else
+				action_cache[timer].ccer_clearbits |= CCER_C1_INIT << (shifts * CCER_C1_NUM_BITS);
+				action_cache[timer].ccer_setbits   |= ccer_bit  << (shifts * CCER_C1_NUM_BITS);
+			#endif
+
 			action_cache[timer].dier_clearbits |= GTIM_DIER_CC1IE  << shifts;
 			action_cache[timer].dier_setbits   |= dier_bit << shifts;
 
@@ -959,7 +979,20 @@ int io_timer_set_enable(bool state, io_timer_channel_mode_t mode, io_timer_chann
 			rvalue &= ~action_cache[actions].ccer_clearbits;
 			rvalue |= action_cache[actions].ccer_setbits;
 			_REG32(action_cache[actions].base, STM32_GTIM_CCER_OFFSET) = rvalue;
-			uint32_t after = rvalue & (GTIM_CCER_CC1E | GTIM_CCER_CC2E | GTIM_CCER_CC3E | GTIM_CCER_CC4E);
+			uint32_t after;
+
+			#ifdef TIM8_USE_COMPLEMENTARY
+				if( action_cache[actions].base == STM32_TIM8_BASE )
+				{
+					after = rvalue & (GTIM_CCER_CC1NE | GTIM_CCER_CC2NE | GTIM_CCER_CC3NE | GTIM_CCER_CC4E);
+				}
+				else
+				{
+					after = rvalue & (GTIM_CCER_CC1E | GTIM_CCER_CC2E | GTIM_CCER_CC3E | GTIM_CCER_CC4E);
+				}
+			#else
+				after = rvalue & (GTIM_CCER_CC1E | GTIM_CCER_CC2E | GTIM_CCER_CC3E | GTIM_CCER_CC4E);
+			#endif
 
 			rvalue = _REG32(action_cache[actions].base, STM32_GTIM_DIER_OFFSET);
 			rvalue &= ~action_cache[actions].dier_clearbits;
