@@ -175,7 +175,7 @@ int PWMOut::set_pwm_rate(unsigned rate_map, unsigned default_rate, unsigned alt_
 
 			// all channels in the group must be either default or alt-rate
 			uint32_t alt = rate_map & mask;
-
+			PX4_INFO("(%u) group %u alt %" PRIx32 " mask %" PRIx32, pass, group, alt, mask);
 			if (pass == 0) {
 				// preflight
 				if ((alt != 0) && (alt != mask)) {

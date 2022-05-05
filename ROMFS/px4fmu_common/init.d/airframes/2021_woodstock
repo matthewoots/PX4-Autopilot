@@ -13,7 +13,6 @@
 
 . ${R}etc/init.d/rc.fw_defaults
 
-set ISSMALL true
 if [ $AUTOCNF = yes ]
 then
 	param set EKF2_ARSP_THR 8
@@ -65,17 +64,7 @@ then
 
 fi
 
-# set MIXER_FILE etc/mixers/woodstock.main.mix
-# set MIXER custom
-# Mixer Woodstock Mini
-if [ $ISSMALL = true ]
-then
-	set MIXER woodstock_mini
-	set MIXER_FILE etc/mixers/woodstock_mini.main.mix
-fi
 # Mixer woodstock main
-if [ $ISSMALL = false ]
-then
-	set MIXER woodstock
-	set MIXER_FILE etc/mixers/woodstock.main.mix
-fi
+set MIXER woodstock
+set MIXER_FILE etc/mixers/woodstock.main.mix
+

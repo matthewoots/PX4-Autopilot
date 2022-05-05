@@ -1,15 +1,15 @@
-Mixer for Woodstock
+Mixer for Woodstock Folderable Wing
 =========================================================
 
 # empty
-Z:
+# Z:
 
 ###################
 # 1 = throttle
 # mixer for the pusher/puller throttle
-M: 1
-O:      10000  10000      0 -10000  10000
-S: 0 3      0  20000 -10000 -10000  10000
+# M: 1
+# O:      10000  10000      0 -10000  10000
+# S: 0 3      0  20000 -10000 -10000  10000
 
 ###################
 # ORDER IS LEFT THEN RIGHT
@@ -55,11 +55,23 @@ S: 0 0  10000  10000    0 -10000  10000
 S: 0 2    0  4000  0 -10000  10000
 
 ###################
-# Fake Rudder is on 8
-# mixer for the rudder
+# Folderable wing mechanism starts from 8
+# mixer for the INDEX_SWEPT left SITL
 M: 1
 O:       10000   10000   0 -10000  10000
-S: 0 2   10000   10000    0 -10000  10000
+S: 7 0   10000   10000    0 -10000  10000
 
-# empty
-Z:
+# mixer for the INDEX_SWEPT right SITL
+M: 1
+O:       10000   10000   0 -10000  10000
+S: 7 0   -10000   -10000    0 -10000  10000
+
+# mixer for the INDEX_RETRACT left SITL
+M: 1
+O:       10000   10000   0 -10000  10000
+S: 7 1   -10000   -10000    0 -10000  10000
+
+# mixer for the INDEX_RETRACT right SITL
+M: 1
+O:       10000   10000   0 -10000  10000
+S: 7 1   10000   10000    0 -10000  10000
