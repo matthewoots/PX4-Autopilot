@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2017 PX4 Development Team. All rights reserved.
+#   Copyright (c) 2019 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,45 +31,27 @@
 #
 ############################################################################
 
-add_subdirectory(airspeed)
-add_subdirectory(avoidance)
-add_subdirectory(battery)
-add_subdirectory(bezier)
-add_subdirectory(button)
-add_subdirectory(cdev)
-add_subdirectory(circuit_breaker)
-add_subdirectory(collision_prevention)
-add_subdirectory(component_information)
-add_subdirectory(controllib)
-add_subdirectory(conversion)
-add_subdirectory(crypto)
-add_subdirectory(drivers)
-add_subdirectory(field_sensor_bias_estimator)
-add_subdirectory(geo)
-add_subdirectory(hysteresis)
-add_subdirectory(l1)
-add_subdirectory(landing_slope)
-add_subdirectory(led)
-add_subdirectory(matrix)
-add_subdirectory(mathlib)
-add_subdirectory(mixer)
-add_subdirectory(mixer_module)
-add_subdirectory(motion_planning)
-add_subdirectory(npfg)
-add_subdirectory(output_limit)
-add_subdirectory(perf)
-add_subdirectory(pid)
-add_subdirectory(pid_design)
-add_subdirectory(pwm)
-add_subdirectory(rc)
-add_subdirectory(sensor_calibration)
-add_subdirectory(slew_rate)
-add_subdirectory(systemlib)
-add_subdirectory(system_identification)
-add_subdirectory(tecs)
-add_subdirectory(terrain_estimation)
-add_subdirectory(tunes)
-add_subdirectory(version)
-add_subdirectory(weather_vane)
-add_subdirectory(wind_estimator)
-add_subdirectory(world_magnetic_model)
+set(functions_header ${CMAKE_CURRENT_BINARY_DIR}/output_functions.hpp)
+add_custom_command(OUTPUT ${functions_header}
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/generate_function_header.py
+		${CMAKE_CURRENT_SOURCE_DIR}/output_functions.yaml
+		${functions_header}
+	DEPENDS
+		output_functions.yaml
+		generate_function_header.py
+	COMMENT "Generating output_functions.hpp"
+)
+add_custom_target(output_functions_header DEPENDS ${functions_header})
+
+px4_add_library(mixer_module
+	actuator_test.cpp
+	mixer_module.cpp
+	functions.cpp
+	)
+
+add_dependencies(mixer_module output_functions_header)
+target_compile_options(mixer_module PRIVATE ${MAX_CUSTOM_OPT_LEVEL})
+
+
+px4_add_functional_gtest(SRC mixer_module_tests.cpp LINKLIBS mixer_module mixer)
+

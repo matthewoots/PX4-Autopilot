@@ -50,6 +50,8 @@ MixingOutput::MixingOutput(uint8_t max_num_outputs, OutputModuleInterface &inter
 	{&interface, ORB_ID(actuator_controls_1)},
 	{&interface, ORB_ID(actuator_controls_2)},
 	{&interface, ORB_ID(actuator_controls_3)},
+	{&interface, ORB_ID(actuator_controls_4)},
+	{&interface, ORB_ID(actuator_controls_5)},
 	{&interface, ORB_ID(actuator_controls_6)},
 	{&interface, ORB_ID(actuator_controls_7)},
 },
@@ -136,7 +138,7 @@ bool MixingOutput::updateSubscriptions(bool allow_wq_switch, bool limit_callback
 		const bool sub_group_1 = (_groups_required & (1 << 1));
 
 		if (allow_wq_switch && !_wq_switched && (sub_group_0 || sub_group_1)) {
-			if (_interface.ChangeWorkQueue(px4::wq_configurations::rate_ctrl)) {
+			if (_interface.ChangeWorkQeue(px4::wq_configurations::rate_ctrl)) {
 				// let the new WQ handle the subscribe update
 				_wq_switched = true;
 				_interface.ScheduleNow();
@@ -540,7 +542,9 @@ int MixingOutput::controlCallback(uintptr_t handle, uint8_t control_group, uint8
 	if (output->_output_limit.state == OUTPUT_LIMIT_STATE_RAMP) {
 		if (((control_group == actuator_controls_s::GROUP_INDEX_ATTITUDE ||
 		      control_group == actuator_controls_s::GROUP_INDEX_ATTITUDE_ALTERNATE) &&
-		     control_index == actuator_controls_s::INDEX_THROTTLE)) {
+		     control_index == actuator_controls_s::INDEX_THROTTLE) ||
+		    (control_group == actuator_controls_s::GROUP_INDEX_ALLOCATED_PART1 ||
+		     control_group == actuator_controls_s::GROUP_INDEX_ALLOCATED_PART2)) {
 			/* limit the throttle output to zero during motor spinup,
 			 * as the motors cannot follow any demand yet
 			 */
@@ -552,7 +556,9 @@ int MixingOutput::controlCallback(uintptr_t handle, uint8_t control_group, uint8
 	if (output->armNoThrottle() && !output->_armed.in_esc_calibration_mode) {
 		if (((control_group == actuator_controls_s::GROUP_INDEX_ATTITUDE ||
 		      control_group == actuator_controls_s::GROUP_INDEX_ATTITUDE_ALTERNATE) &&
-		     control_index == actuator_controls_s::INDEX_THROTTLE)) {
+		     control_index == actuator_controls_s::INDEX_THROTTLE) ||
+		    (control_group == actuator_controls_s::GROUP_INDEX_ALLOCATED_PART1 ||
+		     control_group == actuator_controls_s::GROUP_INDEX_ALLOCATED_PART2)) {
 			/* set the throttle to an invalid value */
 			input = NAN;
 		}

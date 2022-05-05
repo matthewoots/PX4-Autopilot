@@ -136,7 +136,7 @@ public:
 	/** change the FMU mode of the running module */
 	static int fmu_new_mode(PortMode new_mode);
 
-	// static int test();
+	static int test();
 
 	virtual int	ioctl(file *filp, int cmd, unsigned long arg);
 

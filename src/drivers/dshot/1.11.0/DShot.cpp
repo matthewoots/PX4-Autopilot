@@ -299,7 +299,7 @@ void DShot::capture_trampoline(void *context, const uint32_t channel_index, cons
 void DShot::capture_callback(const uint32_t channel_index, const hrt_abstime edge_time,
 			     const uint32_t edge_state, const uint32_t overflow)
 {
-	fprintf(stdout, "DShot: Capture chan:%ld time:%lld state:%ld overflow:%ld\n", channel_index, edge_time, edge_state,
+	fprintf(stdout, "DShot: Capture chan:%d time:%lld state:%d overflow:%d\n", channel_index, edge_time, edge_state,
 		overflow);
 }
 
