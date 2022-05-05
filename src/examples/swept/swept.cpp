@@ -58,10 +58,6 @@
 #include <uORB/SubscriptionInterval.hpp>
 #include <px4_platform_common/module_params.h>
 
-
-// #include <v2.0/common/mavlink.h>
-#include <v2.0/mavlink_types.h>
-
 #ifdef __PX4_NUTTX
 #include <nuttx/fs/ioctl.h>
 #endif
@@ -94,13 +90,6 @@ usage(const char *reason)
 	PRINT_MODULE_USAGE_COMMAND_DESCR("forward", "Forward motion (for flaring phase)");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("backward", "Backward motion (for diving phase)");
 	PRINT_MODULE_USAGE_COMMAND_DESCR("step", "Given value to sweep");
-
-	PRINT_MODULE_USAGE_PARAM_COMMENT("1st arg: 't' 'p' 'y' 'r'");
-	PRINT_MODULE_USAGE_PARAM_COMMENT("2nd arg: Period (how long do you want the overwrite to be) it is in ms.");
-	PRINT_MODULE_USAGE_PARAM_COMMENT("3rd arg: Value of control output. It is multiplied by 1000 for conveience, and scaled back down before output. Throttle: (0 to 1000), the rest: (-1000 to 1000)");
-
-	PRINT_MODULE_USAGE_PARAM_COMMENT("eg sysid pulse t 10 400");
-
 }
 
 void swept_main(int argc, char *argv[])
@@ -119,8 +108,8 @@ void swept_main(int argc, char *argv[])
 
 	/* subscribe to actuator_control topic */
 	int _swept_mode_sub_fd = orb_subscribe(ORB_ID(swept_mode));
-	/* limit the update rate to 100 Hz */
-	orb_set_interval(_swept_mode_sub_fd, 100);
+	/* limit the update rate to 5 Hz */
+	orb_set_interval(_swept_mode_sub_fd, 200);
 	/* obtained data for the first file descriptor */
 	/* copy control raw data into local buffer */
 	orb_copy(ORB_ID(swept_mode), _swept_mode_sub_fd, &_swept_mode);

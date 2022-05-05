@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_SWEPT
+	bool "swept"
+	default n
+	---help---
+		Enable support for swept and retract

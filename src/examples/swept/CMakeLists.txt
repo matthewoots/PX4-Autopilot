@@ -34,20 +34,12 @@
 #configure_file(simulator_config.h.in simulator_config.h @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(SIMULATOR_SRCS swept.cpp)
-if (NOT ${PX4_PLATFORM} STREQUAL "qurt")
-	list(APPEND SIMULATOR_SRCS
-		simulator_mavlink.cpp)
-endif()
-
 px4_add_module(
 	MODULE examples__swept
 	MAIN swept
 	SRCS
-	swept.cpp
+		swept.cpp
 	INCLUDES
 		${PX4_SOURCE_DIR}/mavlink/include/mavlink
 	DEPENDS
 	)
-
-target_include_directories(examples__sysid INTERFACE ${PX4_SOURCE_DIR}/mavlink/include/mavlink)

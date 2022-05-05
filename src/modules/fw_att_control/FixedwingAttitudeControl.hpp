@@ -70,6 +70,8 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_thrust_setpoint.h>
 #include <uORB/topics/vehicle_torque_setpoint.h>
+#include <uORB/topics/swept_mode.h>
+#include <systemlib/mavlink_log.h>
 
 using matrix::Eulerf;
 using matrix::Quatf;
@@ -99,6 +101,8 @@ public:
 private:
 	void Run() override;
 
+	orb_advert_t	_mavlink_log_pub{nullptr};
+
 	void publishTorqueSetpoint(const hrt_abstime &timestamp_sample);
 	void publishThrustSetpoint(const hrt_abstime &timestamp_sample);
 
@@ -118,8 +122,10 @@ private:
 	uORB::Subscription _vehicle_rates_sub{ORB_ID(vehicle_angular_velocity)};
 
 	uORB::SubscriptionData<airspeed_validated_s> _airspeed_validated_sub{ORB_ID(airspeed_validated)};
+	uORB::Subscription _swept_mode_sub{ORB_ID(swept_mode)};	/**< folding wing */
 
 	uORB::Publication<actuator_controls_s>		_actuators_0_pub;
+	uORB::Publication<actuator_controls_s>		_actuators_7_pub;
 	uORB::Publication<actuator_controls_status_s>	_actuator_controls_status_pub;
 	uORB::Publication<vehicle_attitude_setpoint_s>	_attitude_sp_pub;
 	uORB::Publication<vehicle_rates_setpoint_s>	_rate_sp_pub{ORB_ID(vehicle_rates_setpoint)};
@@ -134,6 +140,7 @@ private:
 	vehicle_local_position_s		_local_pos {};		/**< local position */
 	vehicle_rates_setpoint_s		_rates_sp {};		/* attitude rates setpoint */
 	vehicle_status_s			_vehicle_status {};	/**< vehicle status */
+	swept_mode_s			swept {};		/**< swept cb input */
 
 	perf_counter_t	_loop_perf;			/**< loop performance counter */
 

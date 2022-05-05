@@ -44,6 +44,7 @@ FixedwingAttitudeControl::FixedwingAttitudeControl(bool vtol) :
 	ModuleParams(nullptr),
 	WorkItem(MODULE_NAME, px4::wq_configurations::nav_and_controllers),
 	_actuators_0_pub(vtol ? ORB_ID(actuator_controls_virtual_fw) : ORB_ID(actuator_controls_0)),
+	_actuators_7_pub(ORB_ID(actuator_controls_7)),
 	_actuator_controls_status_pub(vtol ? ORB_ID(actuator_controls_status_1) : ORB_ID(actuator_controls_status_0)),
 	_attitude_sp_pub(vtol ? ORB_ID(fw_virtual_attitude_setpoint) : ORB_ID(vehicle_attitude_setpoint)),
 	_loop_perf(perf_alloc(PC_ELAPSED, MODULE_NAME": cycle"))
@@ -282,7 +283,6 @@ void FixedwingAttitudeControl::Run()
 	vehicle_attitude_s att;
 
 	if (_att_sub.update(&att)) {
-
 		// only update parameters if they changed
 		bool params_updated = _parameter_update_sub.updated();
 
@@ -666,6 +666,30 @@ void FixedwingAttitudeControl::Run()
 				publishThrustSetpoint(angular_velocity.timestamp_sample);
 			}
 		}
+
+		// Folding wing on actuator_controls_7
+		if (_swept_mode_sub.updated()) {
+			mavlink_log_info(&_mavlink_log_pub, "swept updated\t");
+			_swept_mode_sub.update(&swept);
+			mavlink_log_info(&_mavlink_log_pub, "swept control %lf %lf\t",
+				(double)swept.control[swept_mode_s::INDEX_SWEPT], (double)swept.control[swept_mode_s::INDEX_RETRACT]);
+		}
+
+		actuator_controls_s _actuators_7; /**< actuator_control_7 inputs */
+
+		_actuators_7.timestamp = hrt_absolute_time();
+		_actuators_7.timestamp_sample = att.timestamp;
+		// Update actuator controls for 0 (swept) and 1 (retract)
+		_actuators_7.control[actuator_controls_s::INDEX_SWEPT] =
+			swept.control[swept_mode_s::INDEX_SWEPT];
+		_actuators_7.control[actuator_controls_s::INDEX_RETRACT] =
+			swept.control[swept_mode_s::INDEX_RETRACT];
+
+		// Make the rest of the actuators in the group are 0.0f since we do not want to use them
+		for (int i = actuator_controls_s::INDEX_RETRACT+1; i < actuator_controls_s::NUM_ACTUATOR_CONTROLS; i++)
+			_actuators_7.control[i] = 0.0f;
+
+		_actuators_7_pub.publish(_actuators_7); /**< Publish actuator_control_7 */
 
 		updateActuatorControlsStatus(dt);
 	}
