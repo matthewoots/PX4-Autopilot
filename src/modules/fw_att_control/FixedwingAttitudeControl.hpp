@@ -122,10 +122,10 @@ private:
 	uORB::Subscription _vehicle_rates_sub{ORB_ID(vehicle_angular_velocity)};
 
 	uORB::SubscriptionData<airspeed_validated_s> _airspeed_validated_sub{ORB_ID(airspeed_validated)};
-	uORB::Subscription _swept_mode_sub{ORB_ID(swept_mode)};	/**< folding wing */
 
 	uORB::Publication<actuator_controls_s>		_actuators_0_pub;
 	uORB::Publication<actuator_controls_s>		_actuators_7_pub;
+
 	uORB::Publication<actuator_controls_status_s>	_actuator_controls_status_pub;
 	uORB::Publication<vehicle_attitude_setpoint_s>	_attitude_sp_pub;
 	uORB::Publication<vehicle_rates_setpoint_s>	_rate_sp_pub{ORB_ID(vehicle_rates_setpoint)};
@@ -140,7 +140,11 @@ private:
 	vehicle_local_position_s		_local_pos {};		/**< local position */
 	vehicle_rates_setpoint_s		_rates_sp {};		/* attitude rates setpoint */
 	vehicle_status_s			_vehicle_status {};	/**< vehicle status */
-	swept_mode_s			swept {};		/**< swept cb input */
+
+	// Folding wing control
+	uORB::Subscription _swept_mode_sub{ORB_ID(swept_mode)};	/**< folding wing */
+	swept_mode_s	swept {};	/**< swept cb input */
+	bool swept_start = false;
 
 	perf_counter_t	_loop_perf;			/**< loop performance counter */
 

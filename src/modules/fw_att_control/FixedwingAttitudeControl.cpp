@@ -673,6 +673,12 @@ void FixedwingAttitudeControl::Run()
 			_swept_mode_sub.update(&swept);
 			mavlink_log_info(&_mavlink_log_pub, "swept control %lf %lf\t",
 				(double)swept.control[swept_mode_s::INDEX_SWEPT], (double)swept.control[swept_mode_s::INDEX_RETRACT]);
+			swept_start = true;
+		}
+		if (!swept_start)
+		{
+			swept.control[swept_mode_s::INDEX_SWEPT] = -1.0f;
+			swept.control[swept_mode_s::INDEX_RETRACT] = -1.0f;
 		}
 
 		actuator_controls_s _actuators_7; /**< actuator_control_7 inputs */

@@ -152,8 +152,8 @@ void swept_main(int argc, char *argv[])
 					/* We take the current time from control output */
 					_swept_mode.timestamp = hrt_absolute_time();
 
-					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = 0;
-					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = 1;
+					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = -1.0f;
+					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = 1.0f;
 
 					/* Publication of trim condition */
 					orb_publish(ORB_ID(swept_mode), _swept_mode_pub, &_swept_mode);
@@ -164,8 +164,8 @@ void swept_main(int argc, char *argv[])
 					/* We take the current time from control output */
 					_swept_mode.timestamp = hrt_absolute_time();
 
-					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = 1;
-					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = 1;
+					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = 1.0f;
+					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = 1.0f;
 
 					/* Publication of trim condition */
 					orb_publish(ORB_ID(swept_mode), _swept_mode_pub, &_swept_mode);
@@ -176,8 +176,8 @@ void swept_main(int argc, char *argv[])
 					/* We take the current time from control output */
 					_swept_mode.timestamp = hrt_absolute_time();
 
-					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = 0;
-					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = 0;
+					_swept_mode.control[swept_mode_s::INDEX_SWEPT] = -1.0f;
+					_swept_mode.control[swept_mode_s::INDEX_RETRACT] = -1.0f;
 
 					/* Publication of trim condition */
 					orb_publish(ORB_ID(swept_mode), _swept_mode_pub, &_swept_mode);

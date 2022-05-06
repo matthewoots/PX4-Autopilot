@@ -75,6 +75,8 @@ MixingOutput::MixingOutput(const char *param_prefix, uint8_t max_num_outputs, Ou
 	{&interface, ORB_ID(actuator_controls_1)},
 	{&interface, ORB_ID(actuator_controls_2)},
 	{&interface, ORB_ID(actuator_controls_3)},
+	{&interface, ORB_ID(actuator_controls_4)},
+	{&interface, ORB_ID(actuator_controls_5)},
 	{&interface, ORB_ID(actuator_controls_6)},
 	{&interface, ORB_ID(actuator_controls_7)},
 },
