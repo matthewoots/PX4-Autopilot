@@ -207,6 +207,7 @@ set(msg_files
 	yaw_estimator_status.msg
 
 	swept_mode.msg
+	vehicle_ws_state.msg
 )
 
 if(NOT px4_constrained_flash_build)

@@ -93,6 +93,7 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/wind.h>
 #include <uORB/topics/orbit_status.h>
+#include <uORB/topics/vehicle_ws_state.h>
 #include <uORB/uORB.h>
 #include <vtol_att_control/vtol_type.h>
 
@@ -163,6 +164,7 @@ private:
 	uORB::Subscription _vehicle_command_sub{ORB_ID(vehicle_command)};
 	uORB::Subscription _vehicle_land_detected_sub{ORB_ID(vehicle_land_detected)};
 	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
+	uORB::Subscription _ws_mission_sub{ORB_ID(vehicle_ws_state)};
 
 	uORB::Publication<vehicle_attitude_setpoint_s>		_attitude_sp_pub;
 	uORB::Publication<vehicle_local_position_setpoint_s> 	_local_pos_sp_pub{ORB_ID(vehicle_local_position_setpoint)};	///< vehicle local position setpoint publication
@@ -178,6 +180,9 @@ private:
 	vehicle_control_mode_s		_control_mode {};		///< control mode
 	vehicle_local_position_s	_local_pos {};			///< vehicle local position
 	vehicle_status_s		_vehicle_status {};		///< vehicle status
+	vehicle_ws_state_s		_ws_mission {};
+
+	bool ws_start_mission = false;
 
 	double _current_latitude{0};
 	double _current_longitude{0};
@@ -290,6 +295,7 @@ private:
 		FW_POSCTRL_MODE_AUTO_LANDING,
 		FW_POSCTRL_MODE_MANUAL_POSITION,
 		FW_POSCTRL_MODE_MANUAL_ALTITUDE,
+		WS_POSCTRL_MODE,
 		FW_POSCTRL_MODE_OTHER
 	} _control_mode_current{FW_POSCTRL_MODE_OTHER};		///< used to check the mode in the last control loop iteration. Use to check if the last iteration was in the same mode.
 

@@ -336,6 +336,42 @@ int Commander::custom_command(int argc, char *argv[])
 		return 0;
 	}
 
+	if (!strcmp(argv[0], "ws")) {
+		if (argc > 1) {
+			vehicle_ws_state_s _ws_mission {};
+			if (!strcmp(argv[1], "exit")) {
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_IDLE;
+
+			} else if (!strcmp(argv[1], "dive")) {
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_DIVE;
+
+			} else if (!strcmp(argv[1], "waypoints")) {
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS;
+
+			} else if (!strcmp(argv[1], "waypoints_loop")) {
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS_LOOP;
+
+			} else if (!strcmp(argv[1], "fwland")) {
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_LAND;
+
+			} else {
+				PX4_ERR("argument %s unsupported.", argv[1]);
+				return 1;
+			}
+			_ws_mission.timestamp = hrt_absolute_time();
+			orb_advert_t _ws_mission_pub = orb_advertise(ORB_ID(vehicle_ws_state), &_ws_mission);
+
+			// bool sent_msg = _ws_mission_pub.publish(_ws_mission);
+			orb_publish(ORB_ID(vehicle_ws_state), _ws_mission_pub, &_ws_mission);
+			PX4_INFO("ws command %s sent", argv[1]);
+
+			return 0;
+
+		} else {
+			PX4_ERR("missing argument");
+		}
+	}
+
 	if (!strcmp(argv[0], "land")) {
 		send_vehicle_command(vehicle_command_s::VEHICLE_CMD_NAV_LAND);
 

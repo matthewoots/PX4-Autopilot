@@ -2385,11 +2385,22 @@ FixedwingPositionControl::Run()
 		}
 
 		_vehicle_status_sub.update(&_vehicle_status);
+		if (_ws_mission_sub.update(&_ws_mission))
+		{
+			mavlink_log_info(&_mavlink_log_pub, "Woodstock mission status updated (%d)", (int)_ws_mission.mission_state);
+			ws_start_mission = (_ws_mission.mission_state > 0);
+		}
 
 		Vector2d curr_pos(_current_latitude, _current_longitude);
 		Vector2f ground_speed(_local_pos.vx, _local_pos.vy);
 
-		set_control_mode_current(_local_pos.timestamp, _pos_sp_triplet.current.valid);
+		// This determines which control mode the platform is in
+		// Insert our custom check here
+		// Subscribe to our woodstock mission message
+		if (ws_start_mission == 0)
+			set_control_mode_current(_local_pos.timestamp, _pos_sp_triplet.current.valid);
+		else
+			_control_mode_current = WS_POSCTRL_MODE;
 
 		switch (_control_mode_current) {
 		case FW_POSCTRL_MODE_AUTO: {
@@ -2425,6 +2436,10 @@ FixedwingPositionControl::Run()
 
 		case FW_POSCTRL_MODE_MANUAL_ALTITUDE: {
 				control_manual_altitude(_local_pos.timestamp, curr_pos, ground_speed);
+				break;
+			}
+
+		case WS_POSCTRL_MODE: {
 				break;
 			}
 
