@@ -124,8 +124,10 @@ elif [ "$program" == "gazebo" ] && [ ! -n "$no_sim" ]; then
 					echo "empty world, default world ${model}.world for model found"
 					world_path="${src_path}/Tools/sitl_gazebo/worlds/${model}.world"
 				else
-					echo "empty world, setting empty.world as default"
-					world_path="${src_path}/Tools/sitl_gazebo/worlds/empty.world"
+					echo "empty world, routing to woodstock empty.world as default"
+					# echo "empty world, setting empty.world as default"
+					# world_path="${src_path}/Tools/sitl_gazebo/worlds/empty.world"
+					world_path="${src_path}/woodstock_extras/empty.world"
 				fi
 			else
 				#Spawn empty world if world with model name doesn't exist

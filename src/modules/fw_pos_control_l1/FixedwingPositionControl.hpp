@@ -52,6 +52,8 @@
 #include "runway_takeoff/RunwayTakeoff.h"
 
 #include <float.h>
+// #include <vector>
+#include <containers/Array.hpp>
 
 #include <drivers/drv_hrt.h>
 #include <lib/geo/geo.h>
@@ -100,6 +102,7 @@
 using namespace launchdetection;
 using namespace runwaytakeoff;
 using namespace time_literals;
+using namespace px4;
 
 using matrix::Vector2d;
 using matrix::Vector2f;
@@ -182,7 +185,12 @@ private:
 	vehicle_status_s		_vehicle_status {};		///< vehicle status
 	vehicle_ws_state_s		_ws_mission {};
 
+	// Woodstock related parameters
 	bool ws_start_mission = false;
+	int ws_mission_wp_size = 0;
+	using waypoint_format = Array < Vector2f, 5 >;
+	waypoint_format loaded_ws_waypoints;
+	waypoint_format use_ws_waypoints;
 
 	double _current_latitude{0};
 	double _current_longitude{0};
@@ -373,6 +381,7 @@ private:
 	void		control_auto_velocity(const hrt_abstime &now, const float dt, const Vector2d &curr_pos,
 					      const Vector2f &ground_speed,
 					      const position_setpoint_s &pos_sp_prev, const position_setpoint_s &pos_sp_curr);
+	void		control_ws_mission(const hrt_abstime &now, const Vector2d &curr_pos, const Vector2f &ground_speed);
 
 	/**
 	 * @brief Vehicle control while in takeoff
@@ -507,7 +516,27 @@ private:
 
 		(ParamFloat<px4::params::FW_TKO_PITCH_MIN>) _takeoff_pitch_min,
 
-		(ParamFloat<px4::params::NAV_FW_ALT_RAD>) _param_nav_fw_alt_rad
+		(ParamFloat<px4::params::NAV_FW_ALT_RAD>) _param_nav_fw_alt_rad,
+
+		// Woodstock paramters
+		(ParamFloat<px4::params::WS_LAT_1>) _param_nav_ws_lat_1,
+		(ParamFloat<px4::params::WS_LONG_1>) _param_nav_ws_long_1,
+
+
+		(ParamFloat<px4::params::WS_LAT_2>) _param_nav_ws_lat_2,
+		(ParamFloat<px4::params::WS_LONG_2>) _param_nav_ws_long_2,
+
+
+		(ParamFloat<px4::params::WS_LAT_3>) _param_nav_ws_lat_3,
+		(ParamFloat<px4::params::WS_LONG_3>) _param_nav_ws_long_3,
+
+
+		(ParamFloat<px4::params::WS_LAT_4>) _param_nav_ws_lat_4,
+		(ParamFloat<px4::params::WS_LONG_4>) _param_nav_ws_long_4,
+
+
+		(ParamFloat<px4::params::WS_LAT_5>) _param_nav_ws_lat_5,
+		(ParamFloat<px4::params::WS_LONG_5>) _param_nav_ws_long_5
 
 	)
 

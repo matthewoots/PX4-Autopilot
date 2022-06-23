@@ -48,6 +48,7 @@ px4_add_romfs_files(
 	2106_albatross
 	2200_mini_talon
 	2021_woodstock
+	2022_woodstock_fw
 
 	2507_cloudship
 

@@ -12,5 +12,5 @@ uint8 WS_VEHICLE_LAND = 4
 
 uint32 mission_targets		# Targets for the platform
 
-int32[20] latitude			# Latitude of mission, in 1E-7 degrees
-int32[20] longitude			# Longitude of mission, in 1E-7 degrees
+float32[10] latitude			# Latitude of mission, in degrees
+float32[10] longitude			# Longitude of mission, in degrees

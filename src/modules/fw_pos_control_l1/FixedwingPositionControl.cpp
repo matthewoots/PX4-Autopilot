@@ -1021,6 +1021,36 @@ FixedwingPositionControl::control_auto_descend(const hrt_abstime &now)
 	_att_sp.pitch_body = get_tecs_pitch();
 }
 
+void
+FixedwingPositionControl::control_ws_mission(const hrt_abstime &now, const Vector2d &curr_pos,
+					      const Vector2f &ground_speed)
+{
+	// Vector2f pos_sp_prev, pos_sp_curr;
+	// const float dt = math::constrain((now - _last_time_position_control_called) * 1e-6f, MIN_AUTO_TIMESTEP,
+	// 				 MAX_AUTO_TIMESTEP);
+	// _last_time_position_control_called = now;
+
+	// // if we assume that user is taking off then help by demanding altitude setpoint well above ground
+	// // and set limit to pitch angle to prevent steering into ground
+	// float pitch_limit_min = _param_fw_p_lim_min.get();
+	// float height_rate_sp = NAN;
+	// float altitude_sp_amsl = _current_altitude;
+
+	// if (in_takeoff_situation()) {
+	// 	// if we assume that user is taking off then help by demanding altitude setpoint well above ground
+	// 	// and set limit to pitch angle to prevent steering into ground
+	// 	// this will only affect planes and not VTOL
+	// 	altitude_sp_amsl = _takeoff_ground_alt + _param_fw_clmbout_diff.get();
+	// 	pitch_limit_min = radians(10.0f);
+
+	// } else {
+	// 	height_rate_sp = getManualHeightRateSetpoint();
+	// }
+
+	// /* throttle limiting */
+	// float throttle_max = _param_fw_thr_max.get();
+}
+
 uint8_t
 FixedwingPositionControl::handle_setpoint_type(const uint8_t setpoint_type, const position_setpoint_s &pos_sp_curr)
 {
@@ -2387,8 +2417,54 @@ FixedwingPositionControl::Run()
 		_vehicle_status_sub.update(&_vehicle_status);
 		if (_ws_mission_sub.update(&_ws_mission))
 		{
-			mavlink_log_info(&_mavlink_log_pub, "Woodstock mission status updated (%d)", (int)_ws_mission.mission_state);
-			ws_start_mission = (_ws_mission.mission_state > 0);
+			mavlink_log_info(&_mavlink_log_pub, "Woodstock mission status updated (%d) current mode (%d)",
+				(int)_ws_mission.mission_state, (int)_control_mode_current);
+			if (_control_mode_current == FW_POSCTRL_MODE_AUTO ||
+				_control_mode_current == FW_POSCTRL_MODE_AUTO_ALTITUDE)
+			{
+				while (loaded_ws_waypoints.size() > 0)
+					loaded_ws_waypoints.erase(loaded_ws_waypoints.end());
+				while (use_ws_waypoints.size() > 0)
+					use_ws_waypoints.erase(use_ws_waypoints.end());
+
+				// load all waypoints from parameters
+				loaded_ws_waypoints.push_back(
+					Vector2f(_param_nav_ws_lat_1.get(), _param_nav_ws_long_1.get()));
+				loaded_ws_waypoints.push_back(
+					Vector2f(_param_nav_ws_lat_2.get(), _param_nav_ws_long_2.get()));
+				loaded_ws_waypoints.push_back(
+					Vector2f(_param_nav_ws_lat_3.get(), _param_nav_ws_long_3.get()));
+				loaded_ws_waypoints.push_back(
+					Vector2f(_param_nav_ws_lat_4.get(), _param_nav_ws_long_4.get()));
+				loaded_ws_waypoints.push_back(
+					Vector2f(_param_nav_ws_lat_5.get(), _param_nav_ws_long_5.get()));
+
+				for (int i = 0; i < (int)_ws_mission.mission_targets; i++)
+				{
+					float gps_base_unit = 1/powf(10,15);
+					if (loaded_ws_waypoints[i](0) <= gps_base_unit &&
+						loaded_ws_waypoints[i](0) >= -gps_base_unit &&
+						loaded_ws_waypoints[i](1) <= gps_base_unit &&
+						loaded_ws_waypoints[i](1) >= -gps_base_unit)
+						use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
+				}
+
+				mavlink_log_info(&_mavlink_log_pub,
+					"loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
+					(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
+
+				if (!use_ws_waypoints.empty())
+				{
+					ws_start_mission = (_ws_mission.mission_state > 0);
+					ws_mission_wp_size = use_ws_waypoints.size();
+				}
+				else
+					mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] empty use_ws_waypoints");
+
+			}
+			else
+				mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] wrong current mode (%d)", (int)_control_mode_current);
+
 		}
 
 		Vector2d curr_pos(_current_latitude, _current_longitude);
@@ -2440,6 +2516,8 @@ FixedwingPositionControl::Run()
 			}
 
 		case WS_POSCTRL_MODE: {
+				control_ws_mission(
+					_local_pos.timestamp, curr_pos, ground_speed);
 				break;
 			}
 
