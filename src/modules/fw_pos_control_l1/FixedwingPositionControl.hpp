@@ -188,9 +188,11 @@ private:
 	// Woodstock related parameters
 	bool ws_start_mission = false;
 	int ws_mission_wp_size = 0;
-	using waypoint_format = Array < Vector2f, 5 >;
+	matrix::Vector2f ws_precision_land_waypoint;
+	using waypoint_format = Array < matrix::Vector3f, 5 >;
 	waypoint_format loaded_ws_waypoints;
 	waypoint_format use_ws_waypoints;
+	bool ws_tracking_status{false};
 
 	double _current_latitude{0};
 	double _current_longitude{0};
@@ -383,6 +385,8 @@ private:
 					      const position_setpoint_s &pos_sp_prev, const position_setpoint_s &pos_sp_curr);
 	void		control_ws_mission(const hrt_abstime &now, const Vector2d &curr_pos, const Vector2f &ground_speed);
 
+	void		update_ws_mission_navigator(const Vector2d &curr_pos);
+
 	/**
 	 * @brief Vehicle control while in takeoff
 	 *
@@ -521,22 +525,26 @@ private:
 		// Woodstock paramters
 		(ParamFloat<px4::params::WS_LAT_1>) _param_nav_ws_lat_1,
 		(ParamFloat<px4::params::WS_LONG_1>) _param_nav_ws_long_1,
-
+		(ParamFloat<px4::params::WS_ALT_1>) _param_nav_ws_alt_1,
 
 		(ParamFloat<px4::params::WS_LAT_2>) _param_nav_ws_lat_2,
 		(ParamFloat<px4::params::WS_LONG_2>) _param_nav_ws_long_2,
-
+		(ParamFloat<px4::params::WS_ALT_2>) _param_nav_ws_alt_2,
 
 		(ParamFloat<px4::params::WS_LAT_3>) _param_nav_ws_lat_3,
 		(ParamFloat<px4::params::WS_LONG_3>) _param_nav_ws_long_3,
-
+		(ParamFloat<px4::params::WS_ALT_3>) _param_nav_ws_alt_3,
 
 		(ParamFloat<px4::params::WS_LAT_4>) _param_nav_ws_lat_4,
 		(ParamFloat<px4::params::WS_LONG_4>) _param_nav_ws_long_4,
-
+		(ParamFloat<px4::params::WS_ALT_4>) _param_nav_ws_alt_4,
 
 		(ParamFloat<px4::params::WS_LAT_5>) _param_nav_ws_lat_5,
-		(ParamFloat<px4::params::WS_LONG_5>) _param_nav_ws_long_5
+		(ParamFloat<px4::params::WS_LONG_5>) _param_nav_ws_long_5,
+		(ParamFloat<px4::params::WS_ALT_5>) _param_nav_ws_alt_5,
+
+		(ParamFloat<px4::params::WS_LAT_P_LAND>) _param_nav_ws_land_lat,
+		(ParamFloat<px4::params::WS_LONG_P_LAND>) _param_nav_ws_land_long
 
 	)
 

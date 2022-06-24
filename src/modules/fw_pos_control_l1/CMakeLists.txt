@@ -39,6 +39,7 @@ px4_add_module(
 	MAIN fw_pos_control_l1
 	SRCS
 		FixedwingPositionControl.cpp
+		WoodstockPositionControl.cpp
 		FixedwingPositionControl.hpp
 	DEPENDS
 		l1

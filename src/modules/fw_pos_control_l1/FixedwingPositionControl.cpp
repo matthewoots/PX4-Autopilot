@@ -1021,36 +1021,6 @@ FixedwingPositionControl::control_auto_descend(const hrt_abstime &now)
 	_att_sp.pitch_body = get_tecs_pitch();
 }
 
-void
-FixedwingPositionControl::control_ws_mission(const hrt_abstime &now, const Vector2d &curr_pos,
-					      const Vector2f &ground_speed)
-{
-	// Vector2f pos_sp_prev, pos_sp_curr;
-	// const float dt = math::constrain((now - _last_time_position_control_called) * 1e-6f, MIN_AUTO_TIMESTEP,
-	// 				 MAX_AUTO_TIMESTEP);
-	// _last_time_position_control_called = now;
-
-	// // if we assume that user is taking off then help by demanding altitude setpoint well above ground
-	// // and set limit to pitch angle to prevent steering into ground
-	// float pitch_limit_min = _param_fw_p_lim_min.get();
-	// float height_rate_sp = NAN;
-	// float altitude_sp_amsl = _current_altitude;
-
-	// if (in_takeoff_situation()) {
-	// 	// if we assume that user is taking off then help by demanding altitude setpoint well above ground
-	// 	// and set limit to pitch angle to prevent steering into ground
-	// 	// this will only affect planes and not VTOL
-	// 	altitude_sp_amsl = _takeoff_ground_alt + _param_fw_clmbout_diff.get();
-	// 	pitch_limit_min = radians(10.0f);
-
-	// } else {
-	// 	height_rate_sp = getManualHeightRateSetpoint();
-	// }
-
-	// /* throttle limiting */
-	// float throttle_max = _param_fw_thr_max.get();
-}
-
 uint8_t
 FixedwingPositionControl::handle_setpoint_type(const uint8_t setpoint_type, const position_setpoint_s &pos_sp_curr)
 {
@@ -2417,6 +2387,7 @@ FixedwingPositionControl::Run()
 		_vehicle_status_sub.update(&_vehicle_status);
 		if (_ws_mission_sub.update(&_ws_mission))
 		{
+			ws_start_mission = false;
 			mavlink_log_info(&_mavlink_log_pub, "Woodstock mission status updated (%d) current mode (%d)",
 				(int)_ws_mission.mission_state, (int)_control_mode_current);
 			if (_control_mode_current == FW_POSCTRL_MODE_AUTO ||
@@ -2429,42 +2400,97 @@ FixedwingPositionControl::Run()
 
 				// load all waypoints from parameters
 				loaded_ws_waypoints.push_back(
-					Vector2f(_param_nav_ws_lat_1.get(), _param_nav_ws_long_1.get()));
+					matrix::Vector3f(_param_nav_ws_lat_1.get(),
+					_param_nav_ws_long_1.get(), _param_nav_ws_alt_1.get()));
 				loaded_ws_waypoints.push_back(
-					Vector2f(_param_nav_ws_lat_2.get(), _param_nav_ws_long_2.get()));
+					matrix::Vector3f(_param_nav_ws_lat_2.get(),
+					_param_nav_ws_long_2.get(), _param_nav_ws_alt_2.get()));
 				loaded_ws_waypoints.push_back(
-					Vector2f(_param_nav_ws_lat_3.get(), _param_nav_ws_long_3.get()));
+					matrix::Vector3f(_param_nav_ws_lat_3.get(),
+					_param_nav_ws_long_3.get(), _param_nav_ws_alt_3.get()));
 				loaded_ws_waypoints.push_back(
-					Vector2f(_param_nav_ws_lat_4.get(), _param_nav_ws_long_4.get()));
+					matrix::Vector3f(_param_nav_ws_lat_4.get(),
+					_param_nav_ws_long_4.get(), _param_nav_ws_alt_4.get()));
 				loaded_ws_waypoints.push_back(
-					Vector2f(_param_nav_ws_lat_5.get(), _param_nav_ws_long_5.get()));
+					matrix::Vector3f(_param_nav_ws_lat_5.get(),
+					_param_nav_ws_long_5.get(), _param_nav_ws_alt_5.get()));
 
-				for (int i = 0; i < (int)_ws_mission.mission_targets; i++)
+				// For the missions task we load from the back so that we can erase from the end
+				if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS ||
+					_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS_LOOP)
 				{
-					float gps_base_unit = 1/powf(10,15);
-					if (loaded_ws_waypoints[i](0) <= gps_base_unit &&
-						loaded_ws_waypoints[i](0) >= -gps_base_unit &&
-						loaded_ws_waypoints[i](1) <= gps_base_unit &&
-						loaded_ws_waypoints[i](1) >= -gps_base_unit)
-						use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
-				}
+					for (int i = (int)_ws_mission.mission_targets - 1; i >= 0; i--)
+					{
+						float gps_base_unit = 1/powf(10,15);
+						if (!(loaded_ws_waypoints[i](0) <= gps_base_unit &&
+							loaded_ws_waypoints[i](0) >= -gps_base_unit &&
+							loaded_ws_waypoints[i](1) <= gps_base_unit &&
+							loaded_ws_waypoints[i](1) >= -gps_base_unit))
+							use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
+					}
 
-				mavlink_log_info(&_mavlink_log_pub,
-					"loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
-					(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
+					mavlink_log_info(&_mavlink_log_pub,
+						"[WAYPOINTS] loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
+						(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
 
-				if (!use_ws_waypoints.empty())
-				{
-					ws_start_mission = (_ws_mission.mission_state > 0);
+					ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
 					ws_mission_wp_size = use_ws_waypoints.size();
 				}
-				else
-					mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] empty use_ws_waypoints");
 
+				if  (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_LAND)
+				{
+					ws_precision_land_waypoint =
+						Vector2f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get());
+					matrix::Vector3f temp_3f_waypoints =
+						matrix::Vector3f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get(), 0.0f);
+
+					float gps_base_unit = 1/powf(10,15);
+					if (!(ws_precision_land_waypoint(0) <= gps_base_unit &&
+						ws_precision_land_waypoint(0) >= -gps_base_unit &&
+						ws_precision_land_waypoint(1) <= gps_base_unit &&
+						ws_precision_land_waypoint(1) >= -gps_base_unit))
+					{
+						use_ws_waypoints.push_back(temp_3f_waypoints);
+					}
+
+					ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
+					ws_mission_wp_size = use_ws_waypoints.size();
+
+					mavlink_log_info(&_mavlink_log_pub,
+						"[LAND] ws_precision_land_waypoint (%f, %f)",
+						(double)ws_precision_land_waypoint(0),
+						(double)ws_precision_land_waypoint(1));
+				}
+
+				if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_NAV)
+				{
+					ws_tracking_status = true;
+					for (int i = (int)_ws_mission.mission_targets - 1; i >= 0; i--)
+					{
+						float gps_base_unit = 1/powf(10,15);
+						if (!(loaded_ws_waypoints[i](0) <= gps_base_unit &&
+							loaded_ws_waypoints[i](0) >= -gps_base_unit &&
+							loaded_ws_waypoints[i](1) <= gps_base_unit &&
+							loaded_ws_waypoints[i](1) >= -gps_base_unit))
+							use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
+					}
+					use_ws_waypoints.push_back(
+						Vector3f((float)_current_latitude, (float)_current_longitude,
+						(float)_current_altitude));
+					mavlink_log_info(&_mavlink_log_pub,
+						"[NAV] loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
+						(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
+
+					// Do not start mission since it is using navigator
+					// ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
+					ws_mission_wp_size = use_ws_waypoints.size();
+				}
 			}
 			else
 				mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] wrong current mode (%d)", (int)_control_mode_current);
 
+			if (!ws_start_mission)
+				mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] empty use_ws_waypoints");
 		}
 
 		Vector2d curr_pos(_current_latitude, _current_longitude);
@@ -2473,8 +2499,12 @@ FixedwingPositionControl::Run()
 		// This determines which control mode the platform is in
 		// Insert our custom check here
 		// Subscribe to our woodstock mission message
-		if (ws_start_mission == 0)
+		if (!ws_start_mission)
+		{
+			if (ws_tracking_status)
+				update_ws_mission_navigator(curr_pos);
 			set_control_mode_current(_local_pos.timestamp, _pos_sp_triplet.current.valid);
+		}
 		else
 			_control_mode_current = WS_POSCTRL_MODE;
 

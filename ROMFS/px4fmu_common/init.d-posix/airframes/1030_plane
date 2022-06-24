@@ -69,6 +69,13 @@ param set-default PWM_MAIN_FUNC8 203
 param set-default PWM_MAIN_FUNC9 206
 param set-default PWM_MAIN_REV 256
 
+param set-default WS_LAT_1 1.328569
+param set-default WS_LONG_1 103.787938
+param set-default WS_ALT_1 20.0
+
+param set-default WS_LAT_P_LAND 1.330587
+param set-default WS_LONG_P_LAND 103.783740
+
 
 set MIXER_FILE etc/mixers-sitl/plane_sitl.main.mix
 set MIXER custom

@@ -2,13 +2,14 @@
 
 uint64 timestamp		# time since system start (microseconds)
 
-bool mission_state		# mission_state of the platform
+uint8 mission_state		# mission_state of the platform
 
 uint8 WS_VEHICLE_IDLE = 0
 uint8 WS_VEHICLE_DIVE = 1
 uint8 WS_VEHICLE_WAYPOINTS = 2
 uint8 WS_VEHICLE_WAYPOINTS_LOOP = 3
-uint8 WS_VEHICLE_LAND = 4
+uint8 WS_VEHICLE_NAV = 4
+uint8 WS_VEHICLE_LAND = 5
 
 uint32 mission_targets		# Targets for the platform
 

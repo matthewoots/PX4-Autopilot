@@ -76,7 +76,7 @@ PARAM_DEFINE_FLOAT(WS_LONG_1, 0.000000000000000f);
  *
  * Waypoint Altitude
  *
- * @unit deg
+ * @unit m
  * @min 10.0
  * @max 60.0
  * @decimal 3
@@ -118,7 +118,7 @@ PARAM_DEFINE_FLOAT(WS_LONG_2, 0.000000000000000f);
  *
  * Waypoint Altitude
  *
- * @unit deg
+ * @unit m
  * @min 10.0
  * @max 60.0
  * @decimal 3
@@ -160,7 +160,7 @@ PARAM_DEFINE_FLOAT(WS_LONG_3, 0.000000000000000f);
  *
  * Waypoint Altitude
  *
- * @unit deg
+ * @unit m
  * @min 10.0
  * @max 60.0
  * @decimal 3
@@ -202,7 +202,7 @@ PARAM_DEFINE_FLOAT(WS_LONG_4, 0.000000000000000f);
  *
  * Waypoint Altitude
  *
- * @unit deg
+ * @unit m
  * @min 10.0
  * @max 60.0
  * @decimal 3
@@ -244,7 +244,7 @@ PARAM_DEFINE_FLOAT(WS_LONG_5, 0.000000000000000f);
  *
  * Waypoint Altitude
  *
- * @unit deg
+ * @unit m
  * @min 10.0
  * @max 60.0
  * @decimal 3

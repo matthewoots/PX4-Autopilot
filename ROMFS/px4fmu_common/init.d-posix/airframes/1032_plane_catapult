@@ -7,10 +7,9 @@
 
 param set-default RWTO_TKOFF 0
 
-param set-default RWTO_TKOFF 0
-param set-default RWTO_TKOFF 0
+param set-default WS_LAT_1 1.328569
+param set-default WS_LONG_1 103.787938
+param set-default WS_ALT_1 20.0
 
-param set-default RWTO_TKOFF 0
-param set-default RWTO_TKOFF 0
-param set-default RWTO_TKOFF 0
-param set-default RWTO_TKOFF 0
+param set-default WS_LAT_P_LAND 1.330587
+param set-default WS_LONG_P_LAND 103.783740

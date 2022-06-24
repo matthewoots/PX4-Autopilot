@@ -339,19 +339,27 @@ int Commander::custom_command(int argc, char *argv[])
 	if (!strcmp(argv[0], "ws")) {
 		if (argc > 1) {
 			vehicle_ws_state_s _ws_mission {};
+			int maximum_number_targets = 5;
 			if (!strcmp(argv[1], "exit")) {
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_IDLE;
 
 			} else if (!strcmp(argv[1], "dive")) {
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_DIVE;
 
+			} else if (!strcmp(argv[1], "nav")) {
+				_ws_mission.mission_targets = maximum_number_targets;
+				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_NAV;
+
 			} else if (!strcmp(argv[1], "waypoints")) {
+				_ws_mission.mission_targets = maximum_number_targets;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS;
 
 			} else if (!strcmp(argv[1], "waypoints_loop")) {
+				_ws_mission.mission_targets = maximum_number_targets;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS_LOOP;
 
-			} else if (!strcmp(argv[1], "fwland")) {
+			} else if (!strcmp(argv[1], "land")) {
+				_ws_mission.mission_targets = 1;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_LAND;
 
 			} else {
