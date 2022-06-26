@@ -3,6 +3,7 @@
 uint64 timestamp		# time since system start (microseconds)
 
 uint8 mission_state		# mission_state of the platform
+uint8 loops			# number of loops for mission
 
 uint8 WS_VEHICLE_IDLE = 0
 uint8 WS_VEHICLE_DIVE = 1

@@ -336,29 +336,37 @@ int Commander::custom_command(int argc, char *argv[])
 		return 0;
 	}
 
-	if (!strcmp(argv[0], "ws")) {
+	if (!strcmp(argv[0], "bird")) {
 		if (argc > 1) {
 			vehicle_ws_state_s _ws_mission {};
 			int maximum_number_targets = 5;
 			if (!strcmp(argv[1], "exit")) {
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_IDLE;
 
-			} else if (!strcmp(argv[1], "dive")) {
+			} else if (!strcmp(argv[1], "dve")) {
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_DIVE;
 
 			} else if (!strcmp(argv[1], "nav")) {
 				_ws_mission.mission_targets = maximum_number_targets;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_NAV;
 
-			} else if (!strcmp(argv[1], "waypoints")) {
+			} else if (!strcmp(argv[1], "wps")) {
 				_ws_mission.mission_targets = maximum_number_targets;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS;
 
-			} else if (!strcmp(argv[1], "waypoints_loop")) {
+			} else if (!strcmp(argv[1], "wpl")) {
+				if (argc > 2)
+					_ws_mission.loops = std::stoi(argv[2]);
+				else
+				{
+					PX4_ERR("argv[2] empty, loop not supported.");
+					return 1;
+				}
+
 				_ws_mission.mission_targets = maximum_number_targets;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS_LOOP;
 
-			} else if (!strcmp(argv[1], "land")) {
+			} else if (!strcmp(argv[1], "lnd")) {
 				_ws_mission.mission_targets = 1;
 				_ws_mission.mission_state = vehicle_ws_state_s::WS_VEHICLE_LAND;
 

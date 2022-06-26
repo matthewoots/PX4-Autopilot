@@ -11,5 +11,13 @@ param set-default WS_LAT_1 1.328569
 param set-default WS_LONG_1 103.787938
 param set-default WS_ALT_1 20.0
 
+param set-default WS_LAT_2 1.327414
+param set-default WS_LONG_2 103.786595
+param set-default WS_ALT_2 20.0
+
+param set-default WS_LAT_3 1.329310
+param set-default WS_LONG_3 103.784329
+param set-default WS_ALT_3 20.0
+
 param set-default WS_LAT_P_LAND 1.330587
 param set-default WS_LONG_P_LAND 103.783740

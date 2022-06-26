@@ -50,6 +50,7 @@
 
 #include "launchdetection/LaunchDetector.h"
 #include "runway_takeoff/RunwayTakeoff.h"
+#include "precisionflightlanding/PrecisionFlightLanding.h"
 
 #include <float.h>
 // #include <vector>
@@ -101,6 +102,7 @@
 
 using namespace launchdetection;
 using namespace runwaytakeoff;
+using namespace precisionflightlanding;
 using namespace time_literals;
 using namespace px4;
 
@@ -189,10 +191,12 @@ private:
 	bool ws_start_mission = false;
 	int ws_mission_wp_size = 0;
 	matrix::Vector2f ws_precision_land_waypoint;
-	using waypoint_format = Array < matrix::Vector3f, 5 >;
+	using waypoint_format = Array < matrix::Vector3f, 20 >;
 	waypoint_format loaded_ws_waypoints;
 	waypoint_format use_ws_waypoints;
 	bool ws_tracking_status{false};
+	bool path_check = true;
+	int _ws_mission_leg = 0;
 
 	double _current_latitude{0};
 	double _current_longitude{0};
@@ -250,6 +254,7 @@ private:
 	hrt_abstime _launch_detection_notify{0};
 
 	RunwayTakeoff _runway_takeoff;
+	PrecisionFlightLanding _precision_flight;
 
 	bool _last_manual{false};				///< true if the last iteration was in manual mode (used to determine when a reset is needed)
 
@@ -383,9 +388,11 @@ private:
 	void		control_auto_velocity(const hrt_abstime &now, const float dt, const Vector2d &curr_pos,
 					      const Vector2f &ground_speed,
 					      const position_setpoint_s &pos_sp_prev, const position_setpoint_s &pos_sp_curr);
-	void		control_ws_mission(const hrt_abstime &now, const Vector2d &curr_pos, const Vector2f &ground_speed);
+	void		control_ws_mission(const hrt_abstime now, const Vector2d curr_pos, const Vector2f ground_speed);
 
-	void		update_ws_mission_navigator(const Vector2d &curr_pos);
+	void		update_ws_mission_navigator(const Vector2d curr_pos);
+
+	void		publish_navigation_message(const matrix::Vector3f curr_pos, const matrix::Vector3f waypoint_pos);
 
 	/**
 	 * @brief Vehicle control while in takeoff

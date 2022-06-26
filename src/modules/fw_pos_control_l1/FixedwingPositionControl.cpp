@@ -2394,9 +2394,9 @@ FixedwingPositionControl::Run()
 				_control_mode_current == FW_POSCTRL_MODE_AUTO_ALTITUDE)
 			{
 				while (loaded_ws_waypoints.size() > 0)
-					loaded_ws_waypoints.erase(loaded_ws_waypoints.end());
+					loaded_ws_waypoints.remove(loaded_ws_waypoints.size()-1);
 				while (use_ws_waypoints.size() > 0)
-					use_ws_waypoints.erase(use_ws_waypoints.end());
+					use_ws_waypoints.remove(use_ws_waypoints.size()-1);
 
 				// load all waypoints from parameters
 				loaded_ws_waypoints.push_back(
@@ -2419,15 +2419,21 @@ FixedwingPositionControl::Run()
 				if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS ||
 					_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_WAYPOINTS_LOOP)
 				{
-					for (int i = (int)_ws_mission.mission_targets - 1; i >= 0; i--)
+					for (int j = 0; j <= (int)_ws_mission.loops; j++)
 					{
-						float gps_base_unit = 1/powf(10,15);
-						if (!(loaded_ws_waypoints[i](0) <= gps_base_unit &&
-							loaded_ws_waypoints[i](0) >= -gps_base_unit &&
-							loaded_ws_waypoints[i](1) <= gps_base_unit &&
-							loaded_ws_waypoints[i](1) >= -gps_base_unit))
-							use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
+						for (int i = (int)_ws_mission.mission_targets - 1; i >= 0; i--)
+						{
+							float gps_base_unit = 1/powf(10,15);
+							if (!(loaded_ws_waypoints[i](0) <= gps_base_unit &&
+								loaded_ws_waypoints[i](0) >= -gps_base_unit &&
+								loaded_ws_waypoints[i](1) <= gps_base_unit &&
+								loaded_ws_waypoints[i](1) >= -gps_base_unit))
+								use_ws_waypoints.push_back(loaded_ws_waypoints[i]);
+						}
 					}
+					use_ws_waypoints.push_back(
+						Vector3f((float)_current_latitude, (float)_current_longitude,
+						(float)_current_altitude));
 
 					mavlink_log_info(&_mavlink_log_pub,
 						"[WAYPOINTS] loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
@@ -2435,9 +2441,21 @@ FixedwingPositionControl::Run()
 
 					ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
 					ws_mission_wp_size = use_ws_waypoints.size();
+
+					float vconst_update = 0.0;
+					// Use airspeed sensor but if there is no airspeed sensor, use GPS
+					if(_airspeed_valid)
+						vconst_update = _airspeed;
+					else
+						vconst_update = sqrt(pow(_local_pos.vx,2) + pow(_local_pos.vy,2));
+
+					_precision_flight.set_rollmax(radians(_param_fw_r_lim.get()));
+					_precision_flight.set_constant_velocity(vconst_update);
+
+					_ws_mission_leg = 1;
 				}
 
-				if  (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_LAND)
+				else if  (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_LAND)
 				{
 					ws_precision_land_waypoint =
 						Vector2f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get());
@@ -2460,9 +2478,21 @@ FixedwingPositionControl::Run()
 						"[LAND] ws_precision_land_waypoint (%f, %f)",
 						(double)ws_precision_land_waypoint(0),
 						(double)ws_precision_land_waypoint(1));
+
+					float vconst_update = 0.0;
+					// Use airspeed sensor but if there is no airspeed sensor, use GPS
+					if(_airspeed_valid)
+						vconst_update = _airspeed;
+					else
+						vconst_update = sqrt(pow(_local_pos.vx,2) + pow(_local_pos.vy,2));
+
+					_precision_flight.set_rollmax(radians(_param_fw_r_lim.get()));
+					_precision_flight.set_constant_velocity(vconst_update);
+
+					_ws_mission_leg = 1;
 				}
 
-				if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_NAV)
+				else if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_NAV)
 				{
 					ws_tracking_status = true;
 					for (int i = (int)_ws_mission.mission_targets - 1; i >= 0; i--)
@@ -2485,11 +2515,13 @@ FixedwingPositionControl::Run()
 					// ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
 					ws_mission_wp_size = use_ws_waypoints.size();
 				}
+				else
+					mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] wrong _ws_mission type (%d)", (int)_ws_mission.mission_state);
 			}
 			else
 				mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] wrong current mode (%d)", (int)_control_mode_current);
 
-			if (!ws_start_mission)
+			if (use_ws_waypoints.empty())
 				mavlink_log_info(&_mavlink_log_pub, "[Woodstock mission not valid] empty use_ws_waypoints");
 		}
 
@@ -2506,7 +2538,9 @@ FixedwingPositionControl::Run()
 			set_control_mode_current(_local_pos.timestamp, _pos_sp_triplet.current.valid);
 		}
 		else
+		{
 			_control_mode_current = WS_POSCTRL_MODE;
+		}
 
 		switch (_control_mode_current) {
 		case FW_POSCTRL_MODE_AUTO: {
