@@ -43,6 +43,20 @@
  * Controller parameters, accessible via MAVLink
  */
 
+ /**
+ * Acceleration / Load limit
+ *
+ * Acceleration limit for platform
+ *
+ * @unit deg
+ * @min 0.0
+ * @max 5.0
+ * @decimal 3
+ * @increment 0.001
+ * @group FW L1 Control
+ */
+PARAM_DEFINE_FLOAT(WS_ACC_LIM, 1.000f);
+
 /**
  * Latitude 1
  *
@@ -280,3 +294,17 @@ PARAM_DEFINE_FLOAT(WS_LAT_P_LAND, 0.000000000000000f);
  * @group FW L1 Control
  */
 PARAM_DEFINE_FLOAT(WS_LONG_P_LAND, 0.000000000000000f);
+
+/**
+ * Elevation Precision Landing
+ *
+ * Waypoint Elevation
+ *
+ * @unit m
+ * @min 0.0
+ * @max 5.0
+ * @decimal 3
+ * @increment 0.001
+ * @group FW L1 Control
+ */
+PARAM_DEFINE_FLOAT(WS_ALT_P_LAND, 0.001f);

@@ -356,7 +356,9 @@ int Commander::custom_command(int argc, char *argv[])
 
 			} else if (!strcmp(argv[1], "wpl")) {
 				if (argc > 2)
-					_ws_mission.loops = std::stoi(argv[2]);
+				{
+					_ws_mission.loops = (int)strtol(argv[2], nullptr, 0);
+				}
 				else
 				{
 					PX4_ERR("argv[2] empty, loop not supported.");

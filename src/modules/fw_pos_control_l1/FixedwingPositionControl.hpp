@@ -197,6 +197,7 @@ private:
 	bool ws_tracking_status{false};
 	bool path_check = true;
 	int _ws_mission_leg = 0;
+	matrix::Vector3d land_pos_local;
 
 	double _current_latitude{0};
 	double _current_longitude{0};
@@ -551,8 +552,8 @@ private:
 		(ParamFloat<px4::params::WS_ALT_5>) _param_nav_ws_alt_5,
 
 		(ParamFloat<px4::params::WS_LAT_P_LAND>) _param_nav_ws_land_lat,
-		(ParamFloat<px4::params::WS_LONG_P_LAND>) _param_nav_ws_land_long
-
+		(ParamFloat<px4::params::WS_LONG_P_LAND>) _param_nav_ws_land_long,
+		(ParamFloat<px4::params::WS_ALT_P_LAND>) _param_nav_ws_land_alt
 	)
 
 };

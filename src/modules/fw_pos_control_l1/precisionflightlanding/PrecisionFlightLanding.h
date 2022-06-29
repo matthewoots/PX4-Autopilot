@@ -406,6 +406,72 @@ public:
 		return flag;
 	}
 
+	// get_bvp_coefficients using PX4 matrix (without eigen)
+	void get_bvp_coefficients(matrix::SquareMatrix<double, 3> initial,
+		matrix::SquareMatrix<double, 3> final, double total_time,
+		matrix::Vector3d *alpha, matrix::Vector3d *beta,
+		matrix::Vector3d *gamma)
+	{
+		double T = total_time;
+		// Update the initial values
+		matrix::Vector3d p0 = matrix::Vector3d(
+			initial(0,0), initial(1,0), initial(2,0));
+		matrix::Vector3d v0 = matrix::Vector3d(
+			initial(0,1), initial(1,1), initial(2,1));
+		matrix::Vector3d a0 = matrix::Vector3d(
+			initial(0,2), initial(1,2), initial(2,2));
+
+		// Update the destination values
+		matrix::Vector3d pf = matrix::Vector3d(
+			final(0,0), final(1,0), final(2,0));
+		matrix::Vector3d vf = matrix::Vector3d(
+			final(0,1), final(1,1), final(2,1));
+		matrix::Vector3d af = matrix::Vector3d(
+			final(0,2), final(1,2), final(2,2));
+
+		matrix::Vector<double, 9> delta;
+		delta(0) = pf(0) - p0(0) - v0(0) * T - 0.5 * a0(0) * pow(T,2);
+		delta(1) = pf(1) - p0(1) - v0(1) * T - 0.5 * a0(1) * pow(T,2);
+		delta(2) = pf(2) - p0(2) - v0(2) * T - 0.5 * a0(2) * pow(T,2);
+		delta(3) = (vf(0) - v0(0) - a0(0) * T);
+		delta(4) = (vf(1) - v0(1) - a0(1) * T);
+		delta(5) = (vf(2) - v0(2) - a0(2) * T);
+		delta(6) = (af(0) - a0(0));
+		delta(7) = (af(1) - a0(1));
+		delta(8) = (af(2) - a0(2));
+
+		double fifth_order[9] = {720, -360*T, 60*pow(T,2),
+					-360*T, 168*pow(T,2), -24*pow(T,3),
+					60*pow(T,2), -24*pow(T,3), 3*pow(T,4)};
+
+		matrix::SquareMatrix<double, 3> m(fifth_order);
+
+		matrix::SquareMatrix<double, 9> M;
+		M.setZero();
+
+		// Make the 3x3 matrix into a 9x9 matrix so that xyz is included
+		for (int i = 0; i < 9; i++)
+		{
+			int l_m = (i+1) % 3 + 3*(int)(((i+1) % 3) == 0) - 1;
+			int h_m = (int)ceil((double)(i+1) / 3.0) - 1;
+
+			int l_M = (l_m)*3;
+			int h_M = (h_m)*3;
+
+			M(l_M,h_M) = m(l_m,h_m);
+			M(l_M+1,h_M+1) = m(l_m,h_m);
+			M(l_M+2,h_M+2) = m(l_m,h_m);
+		}
+
+		matrix::Vector<double, 9> abg;
+
+		abg = (1/pow(T,5) * M * delta);
+		*alpha = matrix::Vector3d(abg(0), abg(1), abg(2));
+		*beta = matrix::Vector3d(abg(3), abg(4), abg(5));
+		*gamma = matrix::Vector3d(abg(6), abg(7), abg(8));
+
+	}
+
 	void set_rollmax(float value) {rollmax = value;}
 
 	void set_constant_velocity(float value) {Vconst = value;}

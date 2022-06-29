@@ -2460,7 +2460,13 @@ FixedwingPositionControl::Run()
 					ws_precision_land_waypoint =
 						Vector2f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get());
 					matrix::Vector3f temp_3f_waypoints =
-						matrix::Vector3f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get(), 0.0f);
+						matrix::Vector3f(_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get(),
+						_param_nav_ws_land_alt.get());
+					matrix::Vector2f land_pos_local_xy = _global_local_proj_ref.project(
+						_param_nav_ws_land_lat.get(), _param_nav_ws_land_long.get());
+					land_pos_local = matrix::Vector3d(
+						land_pos_local_xy(0), land_pos_local_xy(1),
+						(double)_param_nav_ws_land_alt.get());
 
 					float gps_base_unit = 1/powf(10,15);
 					if (!(ws_precision_land_waypoint(0) <= gps_base_unit &&
