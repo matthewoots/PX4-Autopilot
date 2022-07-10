@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# board specific defaults
+#------------------------------------------------------------------------------
+
+param set-default BAT1_V_DIV 11
+param set-default BAT1_A_PER_V 40
+param set-default BAT1_N_CELLS 4
+
+# system autostart
+param set-default SYS_AUTOSTART 4001
+
+# disable checks and mag
+param set-default CBRK_AIRSPD_CHK 162128
+param set-default CBRK_BUZZER 782097
+param set-default SYS_HAS_MAG 0
+param set-default EKF2_MAG_CHECK 0
+param set-default EKF2_MAG_TYPE 5
+
+# initialize accel
+param set-default CAL_ACC0_ID 2162698
+param set-default CAL_ACC0_PRIO 75
+param set-default CAL_ACC0_XOFF 0.099
+param set-default CAL_ACC0_YOFF -0.088
+param set-default CAL_ACC0_ZOFF 1.185
+
+# initialize gyro
+param set-default CAL_GYRO0_ID 2162698
+param set-default CAL_GYRO0_PRIO 75
+param set-default CAL_GYRO0_XOFF 0
+param set-default CAL_GYRO0_YOFF 0
+param set-default CAL_GYRO0_ZOFF 0
+
+# initialize level horizon
+param set-default SENS_BOARD_X_OFF 0.145
+param set-default SENS_BOARD_Y_OFF -0.849
