@@ -80,7 +80,7 @@ MAKE_PID := $(shell echo $$PPID)
 j := $(shell ps T | sed -n 's|.*$(MAKE_PID).*$(MAKE).* \(-j\|--jobs\) *\([0-9][0-9]*\).*|\2|p')
 
 # Default j for clang-tidy
-j_clang_tidy := $(or $(j),4)
+j_clang_tidy := $(or $(j),2)
 
 NINJA_BIN := ninja
 ifndef NO_NINJA_BUILD
@@ -99,12 +99,12 @@ ifdef NINJA_BUILD
 	ifdef VERBOSE
 		PX4_MAKE_ARGS := -v
 	else
-		PX4_MAKE_ARGS :=
+		PX4_MAKE_ARGS := -j2
 	endif
 
 	# Only override ninja default if -j is set.
 	ifneq ($(j),)
-		PX4_MAKE_ARGS := $(PX4_MAKE_ARGS) -j$(j)
+		PX4_MAKE_ARGS := $(PX4_MAKE_ARGS) -j2
 	endif
 else
 	ifdef SYSTEMROOT
@@ -114,10 +114,10 @@ else
 		PX4_CMAKE_GENERATOR := "Unix\ Makefiles"
 	endif
 
-	# For non-ninja builds we default to -j4
-	j := $(or $(j),4)
+	# For non-ninja builds we default to -j2
+	j := $(or $(j),2)
 	PX4_MAKE = $(MAKE)
-	PX4_MAKE_ARGS = -j$(j) --no-print-directory
+	PX4_MAKE_ARGS = -j2 --no-print-directory
 endif
 
 SRC_DIR := $(shell dirname "$(realpath $(lastword $(MAKEFILE_LIST)))")

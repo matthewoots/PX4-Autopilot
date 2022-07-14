@@ -109,4 +109,8 @@ src/systemcmds/topic_listener/listener_generated.cpp
 dataman
 eeprom/
 
+# vscode
+*.vscode
+
 !src/drivers/distance_sensor/broadcom/afbrs50/Lib/*
+
