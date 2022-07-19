@@ -118,9 +118,9 @@
 #  define APP_RESERVATION_SIZE 0
 #endif
 
-#if !defined(BOARD_FIRST_FLASH_SECTOR_TO_ERASE)
-#  define BOARD_FIRST_FLASH_SECTOR_TO_ERASE 1
-#endif
+// #if !defined(BOARD_FIRST_FLASH_SECTOR_TO_ERASE)
+// #  define BOARD_FIRST_FLASH_SECTOR_TO_ERASE 1
+// #endif
 
 #if !defined(USB_DATA_ALIGN)
 # define USB_DATA_ALIGN

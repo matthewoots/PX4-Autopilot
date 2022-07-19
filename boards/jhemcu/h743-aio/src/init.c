@@ -42,13 +42,19 @@
  */
 
 #include "board_config.h"
+#include "stm32_sdmmc.h"
+#include "chip.h"
+
+#include <px4_platform_common/px4_config.h>
+#include <px4_platform_common/tasks.h>
 
 #include <syslog.h>
 
 #include <nuttx/config.h>
 #include <nuttx/board.h>
+#include <nuttx/spi/spi.h>
 #include <nuttx/sdio.h>
-#include <nuttx/mmcsd.h>
+
 #include <arch/board/board.h>
 #include "arm_internal.h"
 
@@ -58,11 +64,16 @@
 #include <px4_arch/io_timer.h>
 #include <px4_platform_common/init.h>
 #include <px4_platform/gpio.h>
+#include <px4_platform/board_determine_hw_info.h>
 #include <px4_platform/board_dma_alloc.h>
 
-# if defined(FLASH_BASED_PARAMS)
-	# include <parameters/flashparams/flashfs.h>
-#endif
+#include <mpu.h>
+
+// # if defined(FLASH_BASED_PARAMS)
+# include <parameters/flashparams/flashfs.h>
+// #endif
+
+#include <nuttx/mmcsd.h>
 
 __BEGIN_DECLS
 extern void led_init(void);
@@ -169,17 +180,38 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 		led_on(LED_BLUE);
 	}
 
-#ifdef CONFIG_MMCSD
-	int ret = stm32_sdio_initialize();
+	// SPI3: SDCard
+	/* Get the SPI port for the microSD slot */
+	struct spi_dev_s *spi3 = stm32_spibus_initialize(CONFIG_NSH_MMCSDSPIPORTNO);
 
-	if (ret != OK) {
+	if (!spi3) {
+		syslog(LOG_ERR, "[boot] FAILED to initialize SPI port %d\n", CONFIG_NSH_MMCSDSPIPORTNO);
 		led_on(LED_BLUE);
+		return -ENODEV;
 	}
+
+	/* Now bind the SPI interface to the MMCSD driver */
+	int result = mmcsd_spislotinitialize(CONFIG_NSH_MMCSDMINOR, CONFIG_NSH_MMCSDSLOTNO, spi3);
+
+	if (result != OK) {
+		led_on(LED_BLUE);
+		syslog(LOG_ERR, "[boot] FAILED to bind SPI port 3 to the MMCSD driver\n");
+		return -ENODEV;
+	}
+
+	up_udelay(20);
+
+#ifdef CONFIG_MMCSD
+	// int ret = stm32_sdio_initialize();
+
+	// if (ret != OK) {
+	// 	led_on(LED_BLUE);
+	// }
 
 #endif
 
 
-#if defined(FLASH_BASED_PARAMS)
+// #if defined(FLASH_BASED_PARAMS)
 	static sector_descriptor_t params_sector_map[] = {
 		{6, 128 * 1024, 0x081C0000},
 		{7, 128 * 1024, 0x081E0000},
@@ -187,7 +219,15 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	};
 
 	/* Initialize the flashfs layer to use heap allocated memory */
-	int result = parameter_flashfs_init(params_sector_map, NULL, 0);
+	result = parameter_flashfs_init(params_sector_map, NULL, 0);
+
+	// static sector_descriptor_t params_sector_map[] = {
+	// 	{15, 128 * 1024, 0x081E0000},
+	// 	{0, 0, 0},
+	// };
+
+	// /* Initialize the flashfs layer to use heap allocated memory */
+	// result = parameter_flashfs_init(params_sector_map, NULL, 0);
 
 	if (result != OK) {
 		syslog(LOG_ERR, "[boot] FAILED to init params in FLASH %d\n", result);
@@ -195,7 +235,7 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 		return -ENODEV;
 	}
 
-#endif
+// #endif
 
 	/* Configure the HW based on the manifest */
 	px4_platform_configure();
