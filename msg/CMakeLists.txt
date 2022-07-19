@@ -205,14 +205,19 @@ set(msg_files
 	wheel_encoders.msg
 	wind.msg
 	yaw_estimator_status.msg
+
+	debug_array.msg
+	debug_key_value.msg
+	debug_value.msg
+	debug_vect.msg
 )
 
 if(NOT px4_constrained_flash_build)
 	list(APPEND msg_files
-		debug_array.msg
-		debug_key_value.msg
-		debug_value.msg
-		debug_vect.msg
+		# debug_array.msg
+		# debug_key_value.msg
+		# debug_value.msg
+		# debug_vect.msg
 	)
 endif()
 
