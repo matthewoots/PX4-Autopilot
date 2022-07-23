@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# board specific defaults
+#------------------------------------------------------------------------------
+
+param set-default BAT1_V_DIV 11
+param set-default BAT1_A_PER_V 40
+
+# Remove mag from EKF2 and the system
+param set-default SYS_HAS_MAG 0
+param set-default EKF2_MAG_CHECK 0
+param set-default EKF2_MAG_TYPE 5
+
+param set-default CBRK_AIRSPD_CHK 161218
