@@ -268,6 +268,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_statustext(msg);
 		break;
 
+	case MAVLINK_MSG_ID_DEBUG:
+		handle_message_debug(msg);
+		break;
+
 #if !defined(CONSTRAINED_FLASH)
 
 	case MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
@@ -2774,6 +2778,21 @@ MavlinkReceiver::handle_message_hil_state_quaternion(mavlink_message_t *msg)
 		hil_battery_status.time_remaining_s = NAN;
 		_battery_pub.publish(hil_battery_status);
 	}
+}
+
+void
+MavlinkReceiver::handle_message_debug(mavlink_message_t *msg)
+{
+	mavlink_debug_t debug_msg;
+	mavlink_msg_debug_decode(msg, &debug_msg);
+
+	debug_value_s debug_topic{};
+
+	debug_topic.timestamp = hrt_absolute_time();
+	debug_topic.ind = debug_msg.ind;
+	debug_topic.value = debug_msg.value;
+
+	_debug_value_pub.publish(debug_topic);
 }
 
 #if !defined(CONSTRAINED_FLASH)
