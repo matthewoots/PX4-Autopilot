@@ -72,7 +72,8 @@ static inline constexpr io_timers_channel_mapping_t initIOTimerChannelMapping(co
 					first_channel = channel;
 
 				} else {
-					constexpr_assert(timer_io_channels_conf[channel - 1].timer_index == i, "Timers are not grouped together");
+
+					// constexpr_assert(timer_io_channels_conf[channel - 1].timer_index == i, "Timers are not grouped together");
 				}
 
 				++channel_count;
