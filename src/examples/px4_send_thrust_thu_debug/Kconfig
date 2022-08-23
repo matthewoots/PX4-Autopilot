@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_PX4_SEND_THRUST_THU_DEBUG
+	bool "px4_send_thrust_thu_debug"
+	default n
+	---help---
+		Enable support for px4_send_thrust_thu_debug

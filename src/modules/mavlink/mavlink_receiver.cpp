@@ -268,6 +268,10 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_statustext(msg);
 		break;
 
+	case MAVLINK_MSG_ID_DEBUG_VECT:
+		handle_message_debug_vect(msg);
+		break;
+
 #if !defined(CONSTRAINED_FLASH)
 
 	case MAVLINK_MSG_ID_NAMED_VALUE_FLOAT:
@@ -278,9 +282,7 @@ MavlinkReceiver::handle_message(mavlink_message_t *msg)
 		handle_message_debug(msg);
 		break;
 
-	case MAVLINK_MSG_ID_DEBUG_VECT:
-		handle_message_debug_vect(msg);
-		break;
+
 
 	case MAVLINK_MSG_ID_DEBUG_FLOAT_ARRAY:
 		handle_message_debug_float_array(msg);
@@ -2776,6 +2778,24 @@ MavlinkReceiver::handle_message_hil_state_quaternion(mavlink_message_t *msg)
 	}
 }
 
+void
+MavlinkReceiver::handle_message_debug_vect(mavlink_message_t *msg)
+{
+	mavlink_debug_vect_t debug_msg;
+	mavlink_msg_debug_vect_decode(msg, &debug_msg);
+
+	debug_vect_s debug_topic{};
+
+	debug_topic.timestamp = hrt_absolute_time();
+	memcpy(debug_topic.name, debug_msg.name, sizeof(debug_topic.name));
+	debug_topic.name[sizeof(debug_topic.name) - 1] = '\0'; // enforce null termination
+	debug_topic.x = debug_msg.x;
+	debug_topic.y = debug_msg.y;
+	debug_topic.z = debug_msg.z;
+
+	_debug_vect_pub.publish(debug_topic);
+}
+
 #if !defined(CONSTRAINED_FLASH)
 void
 MavlinkReceiver::handle_message_named_value_float(mavlink_message_t *msg)
@@ -2808,23 +2828,7 @@ MavlinkReceiver::handle_message_debug(mavlink_message_t *msg)
 	_debug_value_pub.publish(debug_topic);
 }
 
-void
-MavlinkReceiver::handle_message_debug_vect(mavlink_message_t *msg)
-{
-	mavlink_debug_vect_t debug_msg;
-	mavlink_msg_debug_vect_decode(msg, &debug_msg);
 
-	debug_vect_s debug_topic{};
-
-	debug_topic.timestamp = hrt_absolute_time();
-	memcpy(debug_topic.name, debug_msg.name, sizeof(debug_topic.name));
-	debug_topic.name[sizeof(debug_topic.name) - 1] = '\0'; // enforce null termination
-	debug_topic.x = debug_msg.x;
-	debug_topic.y = debug_msg.y;
-	debug_topic.z = debug_msg.z;
-
-	_debug_vect_pub.publish(debug_topic);
-}
 
 void
 MavlinkReceiver::handle_message_debug_float_array(mavlink_message_t *msg)

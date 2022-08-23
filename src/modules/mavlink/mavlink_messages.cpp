@@ -117,6 +117,7 @@
 #include "streams/VFR_HUD.hpp"
 #include "streams/VIBRATION.hpp"
 #include "streams/WIND_COV.hpp"
+#include "streams/DEBUG_VECT.hpp"
 
 #if !defined(CONSTRAINED_FLASH)
 # include "streams/ADSB_VEHICLE.hpp"
@@ -124,7 +125,7 @@
 # include "streams/AUTOPILOT_STATE_FOR_GIMBAL_DEVICE.hpp"
 # include "streams/DEBUG.hpp"
 # include "streams/DEBUG_FLOAT_ARRAY.hpp"
-# include "streams/DEBUG_VECT.hpp"
+
 # include "streams/GIMBAL_DEVICE_ATTITUDE_STATUS.hpp"
 # include "streams/GIMBAL_DEVICE_SET_ATTITUDE.hpp"
 # include "streams/GIMBAL_MANAGER_INFORMATION.hpp"
