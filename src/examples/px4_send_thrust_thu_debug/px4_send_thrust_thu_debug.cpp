@@ -111,7 +111,9 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 	struct vehicle_rates_setpoint_s v_rate_sp;
 	struct battery_status_s battery;
 
-	while (value_counter < 10) {
+	// 10hz for px4_usleep(50000)
+	// 6min hover: 6*60*10=3600 messages
+	while (value_counter < 10000) {
 
 		/* wait for sensor update of 1 file descriptor for 1000 ms (1 second) */
 		int poll_ret = px4_poll(fds, 2, 1000);
@@ -189,7 +191,7 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 					 (double)dbg_key.value);
 		value_counter++;
 		index_counter++;
-		px4_usleep(500000);
+		px4_usleep(50000);
 	}
 
 	return 0;
