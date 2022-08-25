@@ -57,6 +57,7 @@
 #include <uORB/topics/vehicle_acceleration.h>
 #include <uORB/topics/vehicle_rates_setpoint.h>
 #include <uORB/topics/battery_status.h>
+#include <uORB/topics/actuator_outputs.h>
 
 
 extern "C" __EXPORT int px4_send_thrust_thu_debug_main(int argc, char *argv[]);
@@ -68,15 +69,18 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 	/* subscribe to vehicle_acceleration topic */
 	int sensor_sub_fd = orb_subscribe(ORB_ID(vehicle_rates_setpoint));
 	int batt_sub_fd = orb_subscribe(ORB_ID(battery_status));
+	int pwm_sub_fd = orb_subscribe(ORB_ID(actuator_outputs));
 
 	/* limit the update rate to 5 Hz */
 	orb_set_interval(sensor_sub_fd, 200);
 	orb_set_interval(batt_sub_fd, 200);
+	orb_set_interval(pwm_sub_fd, 200);
 
 	/* one could wait for multiple topics with this technique, just using one here */
 	px4_pollfd_struct_t fds[] = {
 		{ .fd = sensor_sub_fd,   .events = POLLIN },
 		{ .fd = batt_sub_fd,   .events = POLLIN },
+		{ .fd = pwm_sub_fd,   .events = POLLIN },
 		/* there could be more file descriptors here, in the form like:
 		 * { .fd = other_sub_fd,   .events = POLLIN },
 		 */
@@ -110,13 +114,14 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 
 	struct vehicle_rates_setpoint_s v_rate_sp;
 	struct battery_status_s battery;
+	struct actuator_outputs_s pwm;
 
 	// 10hz for px4_usleep(50000)
 	// 6min hover: 6*60*10=3600 messages
 	while (value_counter < 10000) {
 
 		/* wait for sensor update of 1 file descriptor for 1000 ms (1 second) */
-		int poll_ret = px4_poll(fds, 2, 1000);
+		int poll_ret = px4_poll(fds, 3, 1000);
 
 		/* handle the poll result */
 		if (poll_ret == 0) {
@@ -156,6 +161,17 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 				// 	 (double)v_rate_sp.thrust_body[2]);
 			}
 
+			if (fds[2].revents & POLLIN) {
+				/* obtained data for the first file descriptor */
+
+				/* copy sensors raw data into local buffer */
+				orb_copy(ORB_ID(actuator_outputs), pwm_sub_fd, &pwm);
+				// PX4_INFO("Accelerometer:\t%8.4f\t%8.4f\t%8.4f",
+				// 	 (double)v_rate_sp.thrust_body[0],
+				// 	 (double)v_rate_sp.thrust_body[1],
+				// 	 (double)v_rate_sp.thrust_body[2]);
+			}
+
 			/* there could be more file descriptors here, in the form like:
 			 * if (fds[1..n].revents & POLLIN) {}
 			 */
@@ -172,23 +188,24 @@ int px4_send_thrust_thu_debug_main(int argc, char *argv[])
 		// can be hacked to send command
 		dbg_ind.ind = 42+index_counter;
 		// dbg_ind.value = 0.5f * value_counter;
-		dbg_ind.value = v_rate_sp.thrust_body[2];
+		dbg_ind.value = pwm.output[1];
 		dbg_ind.timestamp = timestamp_us;
 		orb_publish(ORB_ID(debug_value), pub_dbg_ind, &dbg_ind);
 
 		/* send one vector */
-		dbg_vect.x = 1.0f * value_counter;
+		dbg_vect.x = pwm.output[0];
 		dbg_vect.y = battery.voltage_v;
 		dbg_vect.z = v_rate_sp.thrust_body[2];
 		dbg_vect.timestamp = timestamp_us;
 		orb_publish(ORB_ID(debug_vect), pub_dbg_vect, &dbg_vect);
 
 		// warnx("sending thrust to mavlink..");
-				PX4_INFO("throttle is:\t%8.4f\n voltage is: \t%8.4f",
+				PX4_INFO("\nthrottle is:\t%8.4f\n voltage is: \t%8.4f\n pwm is: \t%d",
 				// 	 (double)v_rate_sp.thrust_body[0],
 				// 	 (double)v_rate_sp.thrust_body[1],
 					 (double)v_rate_sp.thrust_body[2],
-					 (double)dbg_key.value);
+					 (double)dbg_key.value,
+					 (int)dbg_vect.x);
 		value_counter++;
 		index_counter++;
 		px4_usleep(50000);
