@@ -200,7 +200,7 @@ static void mavlink_usb_check(void *arg)
 							}
 
 
-							bool launch_mavlink = false;
+							bool launch_mavlink = true;
 							bool launch_nshterm = false;
 							bool launch_passthru = false;
 							struct termios uart_config;
