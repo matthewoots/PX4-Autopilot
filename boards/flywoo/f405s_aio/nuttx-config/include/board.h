@@ -283,7 +283,7 @@
 #define GPIO_USART6_TX GPIO_USART6_TX_1
 
 /* SPI1:
- *  MPU6000
+ *  MPU6000 ICM42699P
  *  CS: PA4 -- configured in board_config.h
  *  CLK: PA5
  *  MISO: PA6
