@@ -33,6 +33,7 @@ tags
 *.orig
 Firmware.zip
 *.generated.h
+.vscode
 .vagrant
 *.pretty
 xcode

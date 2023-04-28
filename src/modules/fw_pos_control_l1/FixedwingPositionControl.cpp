@@ -2387,9 +2387,11 @@ FixedwingPositionControl::Run()
 		_vehicle_status_sub.update(&_vehicle_status);
 		if (_ws_mission_sub.update(&_ws_mission))
 		{
-			ws_start_mission = false;
+			ws_mode = not_selected;
 			mavlink_log_info(&_mavlink_log_pub, "Woodstock mission status updated (%d) current mode (%d)",
 				(int)_ws_mission.mission_state, (int)_control_mode_current);
+
+
 			if (_control_mode_current == FW_POSCTRL_MODE_AUTO ||
 				_control_mode_current == FW_POSCTRL_MODE_AUTO_ALTITUDE)
 			{
@@ -2439,7 +2441,9 @@ FixedwingPositionControl::Run()
 						"[WAYPOINTS] loaded_ws_waypoints.size() (%d) use_ws_waypoints.size() (%d)",
 						(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
 
-					ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
+					if (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty())
+						ws_mode = mission_phase;
+
 					ws_mission_wp_size = use_ws_waypoints.size();
 
 					float vconst_update = 0.0;
@@ -2477,7 +2481,9 @@ FixedwingPositionControl::Run()
 						use_ws_waypoints.push_back(temp_3f_waypoints);
 					}
 
-					ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
+					if (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty())
+						ws_mode = mission_phase;
+
 					ws_mission_wp_size = use_ws_waypoints.size();
 
 					mavlink_log_info(&_mavlink_log_pub,
@@ -2518,7 +2524,8 @@ FixedwingPositionControl::Run()
 						(int)loaded_ws_waypoints.size(), (int)use_ws_waypoints.size());
 
 					// Do not start mission since it is using navigator
-					// ws_start_mission = (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty());
+					// if (_ws_mission.mission_state > 0 && !use_ws_waypoints.empty())
+					//	ws_mode = mission_phase;
 					ws_mission_wp_size = use_ws_waypoints.size();
 				}
 				else
@@ -2537,7 +2544,7 @@ FixedwingPositionControl::Run()
 		// This determines which control mode the platform is in
 		// Insert our custom check here
 		// Subscribe to our woodstock mission message
-		if (!ws_start_mission)
+		if (ws_mode == not_selected)
 		{
 			if (ws_tracking_status)
 				update_ws_mission_navigator(curr_pos);
@@ -2586,8 +2593,10 @@ FixedwingPositionControl::Run()
 			}
 
 		case WS_POSCTRL_MODE: {
-				control_ws_mission(
-					_local_pos.timestamp, curr_pos, ground_speed);
+				if (ws_mode == mission_phase)
+					control_ws_mission(_local_pos.timestamp, curr_pos, ground_speed);
+				else if (ws_mode == landing_phase)
+					control_ws_landing(_local_pos.timestamp, curr_pos, ground_speed);
 				break;
 			}
 

@@ -96,7 +96,11 @@ FixedwingPositionControl::control_ws_mission(const hrt_abstime now, const Vector
 		if (use_ws_waypoints.empty())
 		{
 			mavlink_log_critical(&_mavlink_log_pub, "waypoints empty, Woodstock navigation completed\t");
-			ws_start_mission = false;
+
+			if (_ws_mission.mission_state == vehicle_ws_state_s::WS_VEHICLE_LAND)
+				ws_mode = landing_phase;
+			else
+				ws_mode = not_selected;
 
 			publish_navigation_message(immediate_current_pose, immediate_goal_waypoint);
 			return;
@@ -189,6 +193,7 @@ FixedwingPositionControl::control_ws_mission(const hrt_abstime now, const Vector
 		Vector2f curr_pos_local = _global_local_proj_ref.project(
 			P(0), P(1));
 
+		// Using L1 to navigate to waypoint
 		_l1_control.navigate_waypoints(prev_wp_local, curr_wp_local, curr_pos_local, ground_speed);
 
 		_att_sp.roll_body = _l1_control.get_roll_setpoint();
@@ -219,6 +224,13 @@ FixedwingPositionControl::control_ws_mission(const hrt_abstime now, const Vector
 	// assign values from TECS
 	_att_sp.pitch_body = get_tecs_pitch();
 	_att_sp.thrust_body[0] = min(get_tecs_thrust(), _param_fw_thr_max.get());
+
+}
+
+void
+FixedwingPositionControl::control_ws_landing(const hrt_abstime now, const Vector2d curr_pos,
+					      const Vector2f ground_speed)
+{
 
 }
 

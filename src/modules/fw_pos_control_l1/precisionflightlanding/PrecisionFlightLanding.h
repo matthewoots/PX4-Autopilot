@@ -472,6 +472,32 @@ public:
 
 	}
 
+	int check_z_vel(matrix::SquareMatrix<double, 3> initial,
+		matrix::SquareMatrix<double, 3> final,
+        	double total_time, double command_time, matrix::Vector3d alpha, matrix::Vector3d beta,
+		matrix::Vector3d gamma)
+	{
+		matrix::Vector3d v0 = matrix::Vector3d(
+			initial(0,1), initial(1,1), initial(2,1));
+		matrix::Vector3d a0 = matrix::Vector3d(
+			initial(0,2), initial(1,2), initial(2,2));
+
+		int waypoint_size = (int)ceil(total_time / command_time);
+		double corrected_interval = total_time / (double)waypoint_size;
+			int bad_counts = 0;
+		for (int i = 0; i < waypoint_size; i++)
+		{
+			matrix::Vector3d vel = (alpha/24 * pow((corrected_interval*i),4) +
+				beta/6 * pow((corrected_interval*i),3) +
+				gamma/2 * pow((corrected_interval*i),2) + a0 * corrected_interval + v0);
+
+			if (vel(2) > 0.001)
+				bad_counts += 1;
+		}
+
+		return bad_counts;
+	}
+
 	void set_rollmax(float value) {rollmax = value;}
 
 	void set_constant_velocity(float value) {Vconst = value;}

@@ -188,7 +188,12 @@ private:
 	vehicle_ws_state_s		_ws_mission {};
 
 	// Woodstock related parameters
-	bool ws_start_mission = false;
+	enum mode_selection {
+		not_selected,
+		mission_phase,
+		landing_phase,
+	};
+	mode_selection ws_mode = not_selected;
 	int ws_mission_wp_size = 0;
 	matrix::Vector2f ws_precision_land_waypoint;
 	using waypoint_format = Array < matrix::Vector3f, 20 >;
@@ -389,10 +394,11 @@ private:
 	void		control_auto_velocity(const hrt_abstime &now, const float dt, const Vector2d &curr_pos,
 					      const Vector2f &ground_speed,
 					      const position_setpoint_s &pos_sp_prev, const position_setpoint_s &pos_sp_curr);
+
+	// Woodstock related functions
 	void		control_ws_mission(const hrt_abstime now, const Vector2d curr_pos, const Vector2f ground_speed);
-
+	void		control_ws_landing(const hrt_abstime now, const Vector2d curr_pos, const Vector2f ground_speed);
 	void		update_ws_mission_navigator(const Vector2d curr_pos);
-
 	void		publish_navigation_message(const matrix::Vector3f curr_pos, const matrix::Vector3f waypoint_pos);
 
 	/**
